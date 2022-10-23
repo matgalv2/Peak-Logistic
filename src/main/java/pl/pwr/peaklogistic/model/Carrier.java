@@ -9,11 +9,12 @@ import javax.validation.constraints.Email;
 @Data
 @Entity
 @Table(name = "Carriers")
-public class Carrier {
+public class Carrier implements WebUser {
     @Id
     private Long userID;
+    @Transient
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userID", referencedColumnName = "userID")
+    @PrimaryKeyJoinColumn
     private User user;
     private String fullName;
     private String taxIdentificationNumber;

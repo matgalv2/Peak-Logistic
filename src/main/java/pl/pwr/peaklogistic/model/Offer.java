@@ -16,6 +16,7 @@ public class Offer {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "carrier", referencedColumnName = "userID")
     private Carrier carrier;
+    private Long carrierID;
     private String startingLoc;
     private String destination;
     private LocalDateTime time;
