@@ -7,5 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserPasswordRequest {
-    private String password;
+    private String oldPassword;
+    private String newPassword;
 }

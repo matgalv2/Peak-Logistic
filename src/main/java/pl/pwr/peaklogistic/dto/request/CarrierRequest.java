@@ -1,11 +1,12 @@
 package pl.pwr.peaklogistic.dto.request;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CarrierRequest {
-    private String fullName;
-    private String contactEmail;
-    private String phoneNumber;
+    private String companyName;
+    private String phone;
 }

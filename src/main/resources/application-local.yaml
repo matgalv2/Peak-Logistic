@@ -5,11 +5,12 @@ spring:
       path: '/console'
   jpa:
     hibernate:
-      #      ddl-auto: validate
+#      ddl-auto: validate
       ddl-auto: create-drop
+#      ddl-auto: create
   datasource:
     url: 'jdbc:h2:mem:peak-logistic'
-  #    url: 'jdbc:h2:file:./peak-logistic'
+#    url: 'jdbc:h2:file:./peak-logistic'
 
   main:
     banner-mode: off
