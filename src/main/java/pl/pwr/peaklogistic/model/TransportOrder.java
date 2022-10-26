@@ -3,6 +3,7 @@ package pl.pwr.peaklogistic.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.pwr.peaklogistic.dto.request.TransportOrderRequest;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -32,11 +33,31 @@ public class TransportOrder {
     private Date endDateFrom;
     private Date endDateTo;
 
-    private float weight;
-    private int height;
-    private int width;
-    private int depth;
+    private float productWeightKG;
+    private int productHeightCM;
+    private int productWidthCM;
+    private int productDepthCM;
 
-    @OneToMany(mappedBy = "transportOrder")
-    private Set<TransportOrderSpecification> transportOrderSpecifications;
+    @OneToMany(mappedBy = "transportOrder", cascade = CascadeType.ALL)
+    private Set<TransportOffer> transportOffers;
+
+    public static TransportOrder fromRequest(TransportOrderRequest transportOrderRequest, User customer){
+
+        TransportOrder transportOrder = new TransportOrder();
+        transportOrder.setCustomer(customer);
+        transportOrder.setFromLocation(transportOrderRequest.getFromLocation());
+        transportOrder.setToLocation(transportOrderRequest.getToLocation());
+        transportOrder.setStartDateFrom(transportOrderRequest.getStartDateFrom());
+        transportOrder.setStartDateTo(transportOrderRequest.getStartDateTo());
+        transportOrder.setEndDateFrom(transportOrderRequest.getEndDateFrom());
+        transportOrder.setEndDateTo(transportOrderRequest.getEndDateTo());
+        transportOrder.setProductWeightKG(transportOrderRequest.getProductWeightInKG());
+        transportOrder.setProductHeightCM(transportOrderRequest.getProductHeightInCM());
+        transportOrder.setProductWidthCM(transportOrderRequest.getProductWidthInCM());
+        transportOrder.setProductDepthCM(transportOrderRequest.getProductDepthInCM());
+
+        return transportOrder;
+    }
+
+
 }

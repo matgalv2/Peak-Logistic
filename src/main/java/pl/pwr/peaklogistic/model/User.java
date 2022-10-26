@@ -27,19 +27,19 @@ public class User {
     private String phone;
     private String taxIdentificationNumber;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", orphanRemoval = true)
     private Set<Chat> customerChats;
 
-    @OneToMany(mappedBy = "carrier")
+    @OneToMany(mappedBy = "carrier", orphanRemoval = true)
     private Set<Chat> carrierChats;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<TransportOrder> transportOrders;
 
-    @OneToMany(mappedBy = "carrier")
-    private Set<TransportOrderSpecification> transportOrderSpecifications;
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
+    private Set<TransportOffer> transportOffers;
 
-    @OneToMany(mappedBy = "carrier")
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
     private Set<JobOffer> jobOffers;
 
 

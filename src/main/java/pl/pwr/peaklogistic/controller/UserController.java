@@ -4,15 +4,12 @@ package pl.pwr.peaklogistic.controller;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.CarrierRequest;
 import pl.pwr.peaklogistic.dto.request.CustomerRequest;
-import pl.pwr.peaklogistic.dto.request.UserPasswordRequest;
 import pl.pwr.peaklogistic.dto.request.UserRequest;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
@@ -27,12 +24,14 @@ import java.net.URI;
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserRepository userRepository;
+
 //    @Bean
 //    private final PasswordEncoder passwordEncoder;
 
     @GetMapping(value = "/users")
     public ResponseEntity<?> getAllUsers(){
-        return ResponseEntity.ok(userRepository.findAll().stream().map(UserResponse::toAPI));
+//        return ResponseEntity.ok(userRepository.findAll().stream().map(UserResponse::toAPI));
+        return ResponseEntity.ok(userRepository.findAll());
     }
 
     @GetMapping(value = "/users/{id}")

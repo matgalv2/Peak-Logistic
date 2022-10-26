@@ -7,10 +7,10 @@ CREATE TABLE TransportOrders (
     startDateTo DATE NOT NULL,
     endDateFrom DATE NOT NULL,
     endDateTo DATE NOT NULL,
-    weight FLOAT NOT NULL,
-    height INT NOT NULL,
-    width INT NOT NULL,
-    depth INT NOT NULL,
+    productWeightKG FLOAT NOT NULL,
+    productHeightCM INT NOT NULL,
+    productWidthCM INT NOT NULL,
+    productDepthCM INT NOT NULL,
 
     PRIMARY KEY (transportOrderID),
     FOREIGN KEY (customerID) REFERENCES Users(userID)

@@ -1,9 +1,13 @@
 package pl.pwr.peaklogistic.dto.request;
 
-import pl.pwr.peaklogistic.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.sql.Date;
 
+
+@Getter
+@AllArgsConstructor
 public class TransportOrderRequest {
     private Long customerID;
 
@@ -15,8 +19,8 @@ public class TransportOrderRequest {
     private Date endDateFrom;
     private Date endDateTo;
 
-    private float weight;
-    private int height;
-    private int width;
-    private int depth;
+    private float productWeightInKG;
+    private int productHeightInCM;
+    private int productWidthInCM;
+    private int productDepthInCM;
 }
