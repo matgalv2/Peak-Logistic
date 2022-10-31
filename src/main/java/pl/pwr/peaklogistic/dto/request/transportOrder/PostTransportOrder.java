@@ -1,4 +1,4 @@
-package pl.pwr.peaklogistic.dto.request;
+package pl.pwr.peaklogistic.dto.request.transportOrder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.sql.Date;
 
 @Getter
 @AllArgsConstructor
-public class TransportOrderRequest {
+public class PostTransportOrder {
     private Long customerID;
 
     private String fromLocation;

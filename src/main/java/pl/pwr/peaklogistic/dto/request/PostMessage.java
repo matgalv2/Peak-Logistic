@@ -9,13 +9,11 @@ import java.sql.Timestamp;
 
 @Getter
 @AllArgsConstructor
-public class MessageRequest {
+public class PostMessage {
     private String content;
     private long senderID;
     private long receiverID;
     private Timestamp sentAt;
 
-//    public static Message toDomain(MessageRequest messageRequest){
-//
-//    }
+
 }

@@ -4,7 +4,7 @@ package pl.pwr.peaklogistic.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pwr.peaklogistic.dto.request.JobOffer.PostJobOffer;
+import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
 
 import javax.persistence.*;
 
@@ -25,15 +25,5 @@ public class JobOffer {
     private String content;
     private String contactEmail;
 
-    public static JobOffer fromPostRequest(PostJobOffer postJobOffer, User carrier){
-        JobOffer jobOffer = new JobOffer();
-
-        jobOffer.carrier = carrier;
-        jobOffer.title = postJobOffer.getTitle();
-        jobOffer.content = postJobOffer.getContent();
-        jobOffer.contactEmail = postJobOffer.getContactEmail();
-
-        return jobOffer;
-    }
 
 }

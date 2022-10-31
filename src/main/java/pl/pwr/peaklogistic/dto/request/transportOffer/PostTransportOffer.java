@@ -1,4 +1,4 @@
-package pl.pwr.peaklogistic.dto.request;
+package pl.pwr.peaklogistic.dto.request.transportOffer;
 
 
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-public class TransportOfferRequest {
+public class PostTransportOffer {
     private long transportOrderID;
     private long carrierID;
     private Date startDate;

@@ -3,7 +3,7 @@ package pl.pwr.peaklogistic.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pwr.peaklogistic.dto.request.TransportOrderRequest;
+import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -41,20 +41,20 @@ public class TransportOrder {
     @OneToMany(mappedBy = "transportOrder", cascade = CascadeType.ALL)
     private Set<TransportOffer> transportOffers;
 
-    public static TransportOrder fromRequest(TransportOrderRequest transportOrderRequest, User customer){
+    public static TransportOrder fromRequest(PostTransportOrder postTransportOrder, User customer){
 
         TransportOrder transportOrder = new TransportOrder();
         transportOrder.setCustomer(customer);
-        transportOrder.setFromLocation(transportOrderRequest.getFromLocation());
-        transportOrder.setToLocation(transportOrderRequest.getToLocation());
-        transportOrder.setStartDateFrom(transportOrderRequest.getStartDateFrom());
-        transportOrder.setStartDateTo(transportOrderRequest.getStartDateTo());
-        transportOrder.setEndDateFrom(transportOrderRequest.getEndDateFrom());
-        transportOrder.setEndDateTo(transportOrderRequest.getEndDateTo());
-        transportOrder.setProductWeightKG(transportOrderRequest.getProductWeightInKG());
-        transportOrder.setProductHeightCM(transportOrderRequest.getProductHeightInCM());
-        transportOrder.setProductWidthCM(transportOrderRequest.getProductWidthInCM());
-        transportOrder.setProductDepthCM(transportOrderRequest.getProductDepthInCM());
+        transportOrder.setFromLocation(postTransportOrder.getFromLocation());
+        transportOrder.setToLocation(postTransportOrder.getToLocation());
+        transportOrder.setStartDateFrom(postTransportOrder.getStartDateFrom());
+        transportOrder.setStartDateTo(postTransportOrder.getStartDateTo());
+        transportOrder.setEndDateFrom(postTransportOrder.getEndDateFrom());
+        transportOrder.setEndDateTo(postTransportOrder.getEndDateTo());
+        transportOrder.setProductWeightKG(postTransportOrder.getProductWeightInKG());
+        transportOrder.setProductHeightCM(postTransportOrder.getProductHeightInCM());
+        transportOrder.setProductWidthCM(postTransportOrder.getProductWidthInCM());
+        transportOrder.setProductDepthCM(postTransportOrder.getProductDepthInCM());
 
         return transportOrder;
     }

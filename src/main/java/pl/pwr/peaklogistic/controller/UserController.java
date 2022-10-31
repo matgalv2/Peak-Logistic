@@ -2,20 +2,22 @@ package pl.pwr.peaklogistic.controller;
 
 
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import pl.pwr.peaklogistic.common.OperationStatus;
+import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
-import pl.pwr.peaklogistic.dto.request.CarrierRequest;
-import pl.pwr.peaklogistic.dto.request.CustomerRequest;
-import pl.pwr.peaklogistic.dto.request.UserRequest;
+import pl.pwr.peaklogistic.dto.request.user.*;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
 import pl.pwr.peaklogistic.dto.response.UserResponse;
 import pl.pwr.peaklogistic.model.User;
-import pl.pwr.peaklogistic.repository.UserRepository;
+import pl.pwr.peaklogistic.services.UserService;
 
 import java.net.URI;
 
@@ -23,41 +25,62 @@ import java.net.URI;
 @RestController
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ModelMapper mapper;
 
-//    @Bean
-//    private final PasswordEncoder passwordEncoder;
 
     @GetMapping(value = "/users")
     public ResponseEntity<?> getAllUsers(){
-//        return ResponseEntity.ok(userRepository.findAll().stream().map(UserResponse::toAPI));
-        return ResponseEntity.ok(userRepository.findAll());
+//        return ResponseEntity.ok(userService.getAllUsers().body().stream().map(UserResponse::toAPI));
+        return ResponseEntity.ok(userService.getAllUsers().body().stream().map(toAPI(UserResponse.class)::map));
     }
 
     @GetMapping(value = "/users/{id}")
     public ResponseEntity<?> getUserById(@PathVariable long id){
-        return userRepository.findById(id).map(user -> ResponseEntity.ok(UserResponse.toAPI(user))).orElse(ResponseEntity.notFound().build());
+        ServiceResponse<User> serviceResponse = userService.getUserById(id);
+
+        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.ok(toAPI(UserResponse.class).map(serviceResponse.body()));
+
+
     }
 
     @GetMapping(value = "/customers")
     public ResponseEntity<?> getAllCustomers(){
-        return ResponseEntity.ok(userRepository.findAll().stream().filter(user -> user.getUserType() == UserType.Customer).map(CustomerResponse::fromUser));
+        return ResponseEntity.ok(userService.getAllCustomers().body().stream().map(toAPI(CustomerResponse.class)::map));
     }
 
     @GetMapping(value = "/carriers")
     public ResponseEntity<?> getAllCarriers(){
-        return ResponseEntity.ok(userRepository.findAll().stream().filter(user -> user.getUserType() == UserType.Carrier).map(CarrierResponse::fromUser));
+        return ResponseEntity.ok(userService.getAllCarriers().body().stream().map( user -> toAPI(CarrierResponse.class).map(user)));
     }
 
 
 
     @PostMapping(value = "/users")
-    public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest){
-//        UserRequest hashedPasswd = new UserRequest(userRequest.getEmail(), passwordEncoder.encode(userRequest.getPassword()), userRequest.getUserType());
-//        User addedUser = userRepository.save(UserRequest.toDomain(hashedPasswd));
-        User addedUser = userRepository.save(UserRequest.toDomain(userRequest));
-        return ResponseEntity.created(URI.create("/" + addedUser.getUserID())).body(UserResponse.toAPI(addedUser));
+    public ResponseEntity<?> createUser(@RequestBody PostUser postUser){
+        User addedUser = userService.createUser(postUser).body();
+        UserResponse user = toAPI(UserResponse.class).map(addedUser);
+        return ResponseEntity.created(URI.create("/" + user.getUserID())).body(user);
     }
+
+    @PostMapping(value = "/carriers")
+    public ResponseEntity<?> createCarrier(@RequestBody PostCarrier postCarrier){
+        User addedCarrier = userService.createCarrier(postCarrier).body();
+        CarrierResponse carrier = toAPI(CarrierResponse.class).map(addedCarrier);
+        return ResponseEntity.created(URI.create("/" + carrier.getUserID())).body(carrier);
+    }
+
+    @PostMapping(value = "/customers")
+    public ResponseEntity<?> createCustomer(@RequestBody PostCustomer postCustomer){
+        User addedCustomer = userService.createCustomer(postCustomer).body();
+        CustomerResponse customer = toAPI(CustomerResponse.class).map(addedCustomer);
+        return ResponseEntity.created(URI.create("/" + customer.getUserID())).body(customer);
+    }
+
+
 
 
 //    @Transactional
@@ -74,48 +97,48 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody CustomerRequest customerRequest){
-        if(!userRepository.existsById(id))
+    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer){
+        ServiceResponse<User> serviceResponse = userService.updateCustomer(id, putCustomer);
+
+        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
             return ResponseEntity.notFound().build();
-        else{
-            User user = userRepository.findById(id).get();
-
-            if(user.getUserType() != UserType.Customer)
-                return ResponseEntity.badRequest().build();
-
-            user.updateFromCustomerRequest(customerRequest);
-            return ResponseEntity.ok().body(CustomerResponse.fromUser(userRepository.save(user)));
-        }
+        else if(serviceResponse.operationStatus() == OperationStatus.Unauthorized)
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
     }
 
     @Transactional
     @PutMapping(value = "/carriers/{id}")
-    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody CarrierRequest carrierRequest){
-        if(!userRepository.existsById(id))
+    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier){
+        ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
+
+        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
             return ResponseEntity.notFound().build();
-        else{
-            User user = userRepository.findById(id).get();
-
-            if(user.getUserType() != UserType.Carrier)
-                return ResponseEntity.badRequest().build();
-
-            user.updateFromCarrierRequest(carrierRequest);
-
-            return ResponseEntity.ok().body(CustomerResponse.fromUser(userRepository.save(user)));
-        }
+        else if(serviceResponse.operationStatus() == OperationStatus.Unauthorized)
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
     }
-
-
 
 
 
     @DeleteMapping(value = "/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable long id){
-        if(!userRepository.existsById(id))
+        ServiceResponse<User> serviceResponse = userService.deleteUser(id);
+
+        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
             return ResponseEntity.notFound().build();
-        else{
-            userRepository.deleteById(id);
+        else if (serviceResponse.operationStatus() == OperationStatus.Unauthorized)
+            return ResponseEntity.badRequest().build();
+        else
             return ResponseEntity.noContent().build();
-        }
+
     }
+
+
+    private <K> TypeMap<User, K> toAPI(Class<K> destinationType){
+        return mapper.typeMap(User.class, destinationType);
+    }
+
 }

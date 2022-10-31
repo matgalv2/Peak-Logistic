@@ -3,7 +3,7 @@ package pl.pwr.peaklogistic.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pwr.peaklogistic.dto.request.TransportOfferRequest;
+import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -31,12 +31,12 @@ public class TransportOffer {
     private float price;
 
 
-    public static TransportOffer fromRequest(TransportOfferRequest transportOfferRequest, TransportOrder transportOrder, User carrier){
+    public static TransportOffer fromRequest(PostTransportOffer postTransportOffer, TransportOrder transportOrder, User carrier){
         TransportOffer transportOffer = new TransportOffer();
         transportOffer.transportOrder = transportOrder;
         transportOffer.carrier = carrier;
-        transportOffer.startDate = transportOfferRequest.getStartDate();
-        transportOffer.endDate = transportOfferRequest.getEndDate();
+        transportOffer.startDate = postTransportOffer.getStartDate();
+        transportOffer.endDate = postTransportOffer.getEndDate();
         transportOffer.price = transportOffer.getPrice();
 
         return transportOffer;

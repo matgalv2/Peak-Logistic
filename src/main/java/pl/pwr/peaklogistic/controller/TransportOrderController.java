@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.UserType;
-import pl.pwr.peaklogistic.dto.request.TransportOrderRequest;
+import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
@@ -34,16 +33,16 @@ public class TransportOrderController {
     }
 
     @PostMapping(value = "/transport-orders")
-    public ResponseEntity<?> createTransportOrder(@RequestBody TransportOrderRequest transportOrderRequest){
+    public ResponseEntity<?> createTransportOrder(@RequestBody PostTransportOrder postTransportOrder){
 
-        if(!userRepository.existsById(transportOrderRequest.getCustomerID()))
+        if(!userRepository.existsById(postTransportOrder.getCustomerID()))
             return ResponseEntity.badRequest().build();
         else{
-            if(userRepository.findById(transportOrderRequest.getCustomerID()).get().getUserType() != UserType.Customer)
+            if(userRepository.findById(postTransportOrder.getCustomerID()).get().getUserType() != UserType.Customer)
                 return ResponseEntity.badRequest().build();
 
-            User customer = userRepository.findById(transportOrderRequest.getCustomerID()).get();
-            TransportOrder addedTransportOrder = transportOrderRepository.save(TransportOrder.fromRequest(transportOrderRequest, customer));
+            User customer = userRepository.findById(postTransportOrder.getCustomerID()).get();
+            TransportOrder addedTransportOrder = transportOrderRepository.save(TransportOrder.fromRequest(postTransportOrder, customer));
 
             return ResponseEntity.created(URI.create("/" + addedTransportOrder.getTransportOrderID())).body(addedTransportOrder);
         }

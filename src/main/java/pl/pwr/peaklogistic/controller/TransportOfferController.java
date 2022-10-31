@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.UserType;
-import pl.pwr.peaklogistic.dto.request.TransportOfferRequest;
+import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
@@ -38,20 +38,20 @@ public class TransportOfferController {
 
     // allows modifying object after creation
     @PostMapping(value = "/transport-order-specifications")
-    public ResponseEntity<?> createTransportOffer(@RequestBody TransportOfferRequest transportOfferRequest){
-        if (!transportOrderRepository.existsById(transportOfferRequest.getTransportOrderID()) ||
-                !userRepository.existsById(transportOfferRequest.getCarrierID())
+    public ResponseEntity<?> createTransportOffer(@RequestBody PostTransportOffer postTransportOffer){
+        if (!transportOrderRepository.existsById(postTransportOffer.getTransportOrderID()) ||
+                !userRepository.existsById(postTransportOffer.getCarrierID())
         )
             return ResponseEntity.badRequest().build();
         else {
 
-            if(userRepository.findById(transportOfferRequest.getCarrierID()).get().getUserType() != UserType.Carrier)
+            if(userRepository.findById(postTransportOffer.getCarrierID()).get().getUserType() != UserType.Carrier)
                 return ResponseEntity.badRequest().build();
 
-            User carrier = userRepository.findById(transportOfferRequest.getCarrierID()).get();
-            TransportOrder transportOrder = transportOrderRepository.findById(transportOfferRequest.getTransportOrderID()).get();
+            User carrier = userRepository.findById(postTransportOffer.getCarrierID()).get();
+            TransportOrder transportOrder = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
 
-            TransportOffer addedTransportOffer = transportOfferRepository.save(TransportOffer.fromRequest(transportOfferRequest, transportOrder, carrier));
+            TransportOffer addedTransportOffer = transportOfferRepository.save(TransportOffer.fromRequest(postTransportOffer, transportOrder, carrier));
             return ResponseEntity.created(URI.create("/" + addedTransportOffer.getTransportOfferID())).body(addedTransportOffer);
         }
 

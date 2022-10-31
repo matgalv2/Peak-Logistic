@@ -1,11 +1,12 @@
 package pl.pwr.peaklogistic.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.pwr.peaklogistic.common.UserType;
-import pl.pwr.peaklogistic.dto.request.CarrierRequest;
-import pl.pwr.peaklogistic.dto.request.CustomerRequest;
+import pl.pwr.peaklogistic.dto.request.user.PutCarrier;
+import pl.pwr.peaklogistic.dto.request.user.PutCustomer;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -39,17 +40,20 @@ public class User {
     @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
     private Set<TransportOffer> transportOffers;
 
-    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<JobOffer> jobOffers;
 
 
-    public void updateFromCustomerRequest(CustomerRequest customerRequest){
-        fullName = customerRequest.getFullName();
+    public void updateFromCustomerRequest(PutCustomer putCustomer){
+        fullName = putCustomer.getFullName();
     }
 
-    public void updateFromCarrierRequest(CarrierRequest carrierRequest){
-        companyName = carrierRequest.getCompanyName();
-        phone = carrierRequest.getPhone();
+    public void updateFromCarrierRequest(PutCarrier putCarrier){
+        companyName = putCarrier.getCompanyName();
+        phone = putCarrier.getPhone();
     }
+
+
 
 }

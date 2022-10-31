@@ -1,4 +1,4 @@
-package pl.pwr.peaklogistic.dto.request;
+package pl.pwr.peaklogistic.dto.request.user;
 
 
 import lombok.AllArgsConstructor;

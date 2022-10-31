@@ -1,4 +1,4 @@
-package pl.pwr.peaklogistic.dto.request.JobOffer;
+package pl.pwr.peaklogistic.dto.request.jobOffer;
 
 
 import lombok.AllArgsConstructor;
