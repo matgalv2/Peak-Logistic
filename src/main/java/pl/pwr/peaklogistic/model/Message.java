@@ -13,12 +13,16 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long messageID;
+
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "receiver", referencedColumnName = "userID")
+    @JoinColumn(name = "sender")
     private User sender;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "sender", referencedColumnName = "userID")
-    private User receiver;
+
+
+    @ManyToOne
+    @JoinColumn(name = "chatID")
+    private Chat chat;
+
     private String content;
     private Timestamp sentAt;
 }
