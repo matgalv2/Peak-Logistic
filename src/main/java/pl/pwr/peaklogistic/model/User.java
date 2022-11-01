@@ -34,14 +34,14 @@ public class User {
     @OneToMany(mappedBy = "carrier", orphanRemoval = true)
     private Set<Chat> carrierChats;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TransportOrder> transportOrders;
 
-    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TransportOffer> transportOffers;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<JobOffer> jobOffers;
 
 

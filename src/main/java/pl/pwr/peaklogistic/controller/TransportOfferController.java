@@ -7,14 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import pl.pwr.peaklogistic.common.OperationStatus;
+import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
-import pl.pwr.peaklogistic.repository.TransportOrderRepository;
-import pl.pwr.peaklogistic.repository.TransportOfferRepository;
-import pl.pwr.peaklogistic.repository.UserRepository;
+import pl.pwr.peaklogistic.services.TransportOfferService;
 
 import java.net.URI;
 
@@ -22,50 +22,57 @@ import java.net.URI;
 @RestController
 public class TransportOfferController {
     private static final Logger logger = LoggerFactory.getLogger(TransportOfferController.class);
-    private final TransportOrderRepository transportOrderRepository;
-    private final TransportOfferRepository transportOfferRepository;
-    private final UserRepository userRepository;
+    private final TransportOfferService transportOfferService;
 
-    @GetMapping(value = "/transport-order-specifications")
+
+    @GetMapping(value = "/transport-offers")
     public ResponseEntity<?> getAllTransportOffers(){
-        return ResponseEntity.ok(transportOfferRepository.findAll());
+        return ResponseEntity.ok(transportOfferService.getAllTransportOffers().body());
     }
 
-    @GetMapping(value = "/transport-order-specifications/{id}")
+    @GetMapping(value = "/transport-offers/{id}")
     public ResponseEntity<?> getTransportOfferById(@PathVariable long id){
-        return transportOfferRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        ServiceResponse<TransportOffer> serviceResponse = transportOfferService.getTransportOfferById(id);
+
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
+            return ResponseEntity.ok(serviceResponse.body());
+        else
+            return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/transport-offers/carriers/{id}")
+    public ResponseEntity<?> getTransportOffersByCarrier(@PathVariable long id){
+        return ResponseEntity.ok(transportOfferService.getTransportOffersByCarrierId(id).body());
+    }
+
+    @GetMapping(value = "/transport-offers/transport-orders/{id}")
+    public ResponseEntity<?> getTransportOfferByOrder(@PathVariable long id){
+        return ResponseEntity.ok(transportOfferService.getTransportOffersByTransportOrderId(id).body());
     }
 
     // allows modifying object after creation
-    @PostMapping(value = "/transport-order-specifications")
+    @PostMapping(value = "/transport-offers")
     public ResponseEntity<?> createTransportOffer(@RequestBody PostTransportOffer postTransportOffer){
-        if (!transportOrderRepository.existsById(postTransportOffer.getTransportOrderID()) ||
-                !userRepository.existsById(postTransportOffer.getCarrierID())
-        )
+        ServiceResponse<TransportOffer> serviceResponse = transportOfferService.createTransportOffer(postTransportOffer);
+
+        if (serviceResponse.operationStatus() == OperationStatus.Created)
+            return ResponseEntity.created(URI.create("/"+serviceResponse.body().getTransportOfferID())).body(serviceResponse.body());
+        else if(serviceResponse.operationStatus() == OperationStatus.NotFound)
+            return ResponseEntity.notFound().build();
+        else
             return ResponseEntity.badRequest().build();
-        else {
-
-            if(userRepository.findById(postTransportOffer.getCarrierID()).get().getUserType() != UserType.Carrier)
-                return ResponseEntity.badRequest().build();
-
-            User carrier = userRepository.findById(postTransportOffer.getCarrierID()).get();
-            TransportOrder transportOrder = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
-
-            TransportOffer addedTransportOffer = transportOfferRepository.save(TransportOffer.fromRequest(postTransportOffer, transportOrder, carrier));
-            return ResponseEntity.created(URI.create("/" + addedTransportOffer.getTransportOfferID())).body(addedTransportOffer);
-        }
-
 
     }
 
     @Transactional
-    @DeleteMapping(value = "/transport-order-specifications/{id}")
+    @DeleteMapping(value = "/transport-offers/{id}")
     public ResponseEntity<?> deleteTransportOffer(@PathVariable long id){
-        if(!transportOfferRepository.existsById(id))
-            return ResponseEntity.notFound().build();
-        else{
-            transportOfferRepository.deleteById(id);
+        ServiceResponse<TransportOffer> serviceResponse = transportOfferService.deleteTransportOffer(id);
+        if(serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
-        }
+        else if(serviceResponse.operationStatus() == OperationStatus.NotFound)
+            return ResponseEntity.notFound().build();
+        else
+            return ResponseEntity.badRequest().build();
     }
 }

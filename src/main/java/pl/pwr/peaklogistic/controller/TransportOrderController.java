@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.pwr.peaklogistic.common.UserType;
+import pl.pwr.peaklogistic.common.OperationStatus;
+import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 import pl.pwr.peaklogistic.model.TransportOrder;
-import pl.pwr.peaklogistic.model.User;
-import pl.pwr.peaklogistic.repository.TransportOrderRepository;
-import pl.pwr.peaklogistic.repository.UserRepository;
+import pl.pwr.peaklogistic.services.TransportOrderService;
 
 import java.net.URI;
 
@@ -19,42 +18,47 @@ import java.net.URI;
 @RestController
 public class TransportOrderController {
     private static final Logger logger = LoggerFactory.getLogger(TransportOrderController.class);
-    private final TransportOrderRepository transportOrderRepository;
-    private final UserRepository userRepository;
+    private final TransportOrderService transportOrderService;
 
     @GetMapping(value = "/transport-orders")
     public ResponseEntity<?> getAllTransportOrders(){
-        return ResponseEntity.ok(transportOrderRepository.findAll());
+        return ResponseEntity.ok(transportOrderService.getAllTransportOrders().body());
     }
 
     @GetMapping(value = "/transport-orders/{id}")
     public ResponseEntity<?> getTransportOrderById(@PathVariable long id){
-        return transportOrderRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        ServiceResponse<TransportOrder> serviceResponse = transportOrderService.getTransportOrderById(id);
+
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
+            return ResponseEntity.ok(serviceResponse.body());
+        else
+            return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/transport-orders/customer/{id}")
+    public ResponseEntity<?> getTransportOrdersByCustomerId(@PathVariable long id){
+        return ResponseEntity.ok(transportOrderService.getTransportOrdersByCustomerId(id).body());
     }
 
     @PostMapping(value = "/transport-orders")
     public ResponseEntity<?> createTransportOrder(@RequestBody PostTransportOrder postTransportOrder){
 
-        if(!userRepository.existsById(postTransportOrder.getCustomerID()))
+        ServiceResponse<TransportOrder> serviceResponse = transportOrderService.createTransportOrder(postTransportOrder);
+
+        if (serviceResponse.operationStatus() == OperationStatus.Created)
+            return ResponseEntity.created(URI.create("/"+serviceResponse.body().getTransportOrderID())).body(serviceResponse.body());
+        else
             return ResponseEntity.badRequest().build();
-        else{
-            if(userRepository.findById(postTransportOrder.getCustomerID()).get().getUserType() != UserType.Customer)
-                return ResponseEntity.badRequest().build();
-
-            User customer = userRepository.findById(postTransportOrder.getCustomerID()).get();
-            TransportOrder addedTransportOrder = transportOrderRepository.save(TransportOrder.fromRequest(postTransportOrder, customer));
-
-            return ResponseEntity.created(URI.create("/" + addedTransportOrder.getTransportOrderID())).body(addedTransportOrder);
-        }
     }
 
     @DeleteMapping(value = "/transport-orders/{id}")
     public ResponseEntity<?> deleteTransportOrder(@PathVariable long id){
-        if(!transportOrderRepository.existsById(id))
-            return ResponseEntity.notFound().build();
-        else{
-            transportOrderRepository.deleteById(id);
+        ServiceResponse<TransportOrder> serviceResponse = transportOrderService.deleteTransportOrder(id);
+        if(serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
-        }
+        else
+            return ResponseEntity.notFound().build();
+
     }
+
 }

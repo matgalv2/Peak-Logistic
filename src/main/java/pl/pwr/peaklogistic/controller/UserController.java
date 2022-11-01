@@ -39,10 +39,10 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable long id){
         ServiceResponse<User> serviceResponse = userService.getUserById(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(UserResponse.class).map(serviceResponse.body()));
+        else
+            return ResponseEntity.notFound().build();
 
 
     }
@@ -100,12 +100,10 @@ public class UserController {
     public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer){
         ServiceResponse<User> serviceResponse = userService.updateCustomer(id, putCustomer);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else if(serviceResponse.operationStatus() == OperationStatus.Unauthorized)
-            return ResponseEntity.badRequest().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
+        else
+            return ResponseEntity.notFound().build();
     }
 
     @Transactional
@@ -113,12 +111,10 @@ public class UserController {
     public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier){
         ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else if(serviceResponse.operationStatus() == OperationStatus.Unauthorized)
-            return ResponseEntity.badRequest().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
+        else
+            return ResponseEntity.notFound().build();
     }
 
 
@@ -127,13 +123,10 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable long id){
         ServiceResponse<User> serviceResponse = userService.deleteUser(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else if (serviceResponse.operationStatus() == OperationStatus.Unauthorized)
-            return ResponseEntity.badRequest().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
-
+        else
+            return ResponseEntity.notFound().build();
     }
 
 

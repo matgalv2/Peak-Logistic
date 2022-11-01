@@ -1,5 +1,6 @@
 package pl.pwr.peaklogistic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,28 +19,19 @@ public class TransportOffer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transportOfferID;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "transportOrderID")
     private TransportOrder transportOrder;
-//    private Long transportOfferID;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "carrierID")
     private User carrier;
-//    private Long carrierID;
+
     private Date startDate;
     private Date endDate;
     private float price;
-
-
-    public static TransportOffer fromRequest(PostTransportOffer postTransportOffer, TransportOrder transportOrder, User carrier){
-        TransportOffer transportOffer = new TransportOffer();
-        transportOffer.transportOrder = transportOrder;
-        transportOffer.carrier = carrier;
-        transportOffer.startDate = postTransportOffer.getStartDate();
-        transportOffer.endDate = postTransportOffer.getEndDate();
-        transportOffer.price = transportOffer.getPrice();
-
-        return transportOffer;
-    }
 
 }

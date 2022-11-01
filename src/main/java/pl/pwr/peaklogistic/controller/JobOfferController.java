@@ -35,10 +35,10 @@ public class JobOfferController {
     public ResponseEntity<?> getJobOfferById(@PathVariable long id){
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.getJobOfferById(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(serviceResponse.body());
+        else
+            return ResponseEntity.notFound().build();
 
     }
 
@@ -46,10 +46,10 @@ public class JobOfferController {
     public ResponseEntity<?> createJobOffer(@RequestBody PostJobOffer postJobOffer) {
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.createJobOffer(postJobOffer);
 
-        if(serviceResponse.operationStatus() == OperationStatus.BadRequest)
-            return ResponseEntity.badRequest().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.Created)
             return ResponseEntity.created(URI.create("/" + serviceResponse.body().getJobOfferID())).body(serviceResponse.body());
+        else
+            return ResponseEntity.badRequest().build();
     }
 
 
@@ -57,12 +57,11 @@ public class JobOfferController {
     public ResponseEntity<?> deleteOffer(@PathVariable long id){
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.deleteJobOffer(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NotFound)
-            return ResponseEntity.notFound().build();
-        else if (serviceResponse.operationStatus() == OperationStatus.Unauthorized)
-            return ResponseEntity.badRequest().build();
-        else
+        if(serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
+        else
+            return ResponseEntity.notFound().build();
+
 
     }
 }
