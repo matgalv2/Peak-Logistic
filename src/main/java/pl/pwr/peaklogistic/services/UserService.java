@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.*;
-import pl.pwr.peaklogistic.dto.response.CarrierResponse;
-import pl.pwr.peaklogistic.dto.response.CustomerResponse;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
@@ -24,28 +22,28 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public ServiceResponse<List<User>> getAllUsers(){
+    public ServiceResponse<List<User>> getAllUsers() {
         return ServiceResponse.ok(userRepository.findAll());
     }
 
-    public ServiceResponse<User> getUserById(long id){
+    public ServiceResponse<User> getUserById(long id) {
         return userRepository
                 .findById(id)
                 .map(ServiceResponse::ok)
                 .orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<User>> getAllCustomers(){
+    public ServiceResponse<List<User>> getAllCustomers() {
         return ServiceResponse.ok(
                 userRepository
-                .findAll()
-                .stream()
-                .filter(user -> user.getUserType() == UserType.Customer)
-                .toList()
+                        .findAll()
+                        .stream()
+                        .filter(user -> user.getUserType() == UserType.Customer)
+                        .toList()
         );
     }
 
-    public ServiceResponse<List<User>> getAllCarriers(){
+    public ServiceResponse<List<User>> getAllCarriers() {
         return ServiceResponse.ok(
                 userRepository
                         .findAll()
@@ -55,28 +53,28 @@ public class UserService {
         );
     }
 
-    public ServiceResponse<User> createUser(PostUser postUser){
+    public ServiceResponse<User> createAdmin(PostUser postUser) {
         PostUser newPostUser = PostUser.copy(postUser, encryptPassword(postUser.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomainMapper(PostUser.class).map(newPostUser)));
+        return ServiceResponse.created(userRepository.save(toDomain(PostUser.class, UserType.Admin).map(newPostUser)));
     }
 
-    public ServiceResponse<User> createCustomer(PostCustomer postCustomer){
+    public ServiceResponse<User> createCustomer(PostCustomer postCustomer) {
         PostCustomer newPostCustomer = PostCustomer.copy(postCustomer, encryptPassword(postCustomer.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomainMapper(PostCustomer.class).map(newPostCustomer)));
+        return ServiceResponse.created(userRepository.save(toDomain(PostCustomer.class, UserType.Customer).map(newPostCustomer)));
     }
 
-    public ServiceResponse<User> createCarrier(PostCarrier postCarrier){
+    public ServiceResponse<User> createCarrier(PostCarrier postCarrier) {
         PostCarrier newPostCarrier = PostCarrier.copy(postCarrier, encryptPassword(postCarrier.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomainMapper(PostCarrier.class).map(newPostCarrier)));
+        return ServiceResponse.created(userRepository.save(toDomain(PostCarrier.class, UserType.Carrier).map(newPostCarrier)));
     }
 
-    public ServiceResponse<User> updateCustomer(long id, PutCustomer putCustomer){
-        if(!userRepository.existsById(id))
+    public ServiceResponse<User> updateCustomer(long id, PutCustomer putCustomer) {
+        if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             User user = userRepository.findById(id).get();
 
-            if(user.getUserType() != UserType.Customer)
+            if (user.getUserType() != UserType.Customer)
                 return ServiceResponse.unauthorized();
 
             user.updateFromCustomerRequest(putCustomer);
@@ -84,13 +82,13 @@ public class UserService {
         }
     }
 
-    public ServiceResponse<User> updateCarrier(long id, PutCarrier putCarrier){
-        if(!userRepository.existsById(id))
+    public ServiceResponse<User> updateCarrier(long id, PutCarrier putCarrier) {
+        if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             User user = userRepository.findById(id).get();
 
-            if(user.getUserType() != UserType.Carrier)
+            if (user.getUserType() != UserType.Carrier)
                 return ServiceResponse.unauthorized();
 
             user.updateFromCarrierRequest(putCarrier);
@@ -99,24 +97,21 @@ public class UserService {
         }
     }
 
-    public ServiceResponse<User> deleteUser(long id){
-        if(!userRepository.existsById(id))
+    public ServiceResponse<User> deleteUser(long id) {
+        if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             userRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
     }
 
 
-
-
-
-    private <K> TypeMap<K, User> toDomainMapper(Class<K> sourceType){
-        return mapper.typeMap(sourceType, User.class);
+    private <K> TypeMap<K, User> toDomain(Class<K> sourceType, UserType userType) {
+        return mapper.typeMap(sourceType, User.class).addMapping(src -> userType, User::setUserType);
     }
 
-    private String encryptPassword(String password){
+    private String encryptPassword(String password) {
         return passwordEncoder.encode(password);
     }
 

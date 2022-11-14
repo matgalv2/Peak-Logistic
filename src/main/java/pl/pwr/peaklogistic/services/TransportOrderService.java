@@ -22,38 +22,37 @@ public class TransportOrderService {
     private final ModelMapper mapper;
     private final UserRepository userRepository;
 
-    public ServiceResponse<List<TransportOrder>> getAllTransportOrders()
-    {
+    public ServiceResponse<List<TransportOrder>> getAllTransportOrders() {
         return ServiceResponse.ok(transportOrderRepository.findAll());
     }
 
-    public ServiceResponse<TransportOrder> getTransportOrderById(long id){
+    public ServiceResponse<TransportOrder> getTransportOrderById(long id) {
         return transportOrderRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<TransportOrder>> getTransportOrdersByCustomerId(long id){
+    public ServiceResponse<List<TransportOrder>> getTransportOrdersByCustomerId(long id) {
         return ServiceResponse.ok(transportOrderRepository.getTransportOrdersByCustomerUserID(id));
     }
 
 
-    public ServiceResponse<TransportOrder> createTransportOrder(PostTransportOrder postTransportOrder){
+    public ServiceResponse<TransportOrder> createTransportOrder(PostTransportOrder postTransportOrder, long customerID) {
         return userRepository
-                .findById(postTransportOrder.getCustomerID())
+                .findById(customerID)
                 .map(x -> ServiceResponse.created(transportOrderRepository.save(mapperWithUser(x).map(postTransportOrder))))
                 .orElse(ServiceResponse.badRequest());
 
     }
 
-    public ServiceResponse<TransportOrder> deleteTransportOrder(long id){
+    public ServiceResponse<TransportOrder> deleteTransportOrder(long id) {
         if (!transportOrderRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             transportOrderRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
     }
 
-    private TypeMap<PostTransportOrder, TransportOrder> mapperWithUser(User user){
+    private TypeMap<PostTransportOrder, TransportOrder> mapperWithUser(User user) {
         return mapper
 //                .addMappings(mapper -> mapper.map(src -> user, JobOffer::setCarrier));
                 .typeMap(PostTransportOrder.class, TransportOrder.class)

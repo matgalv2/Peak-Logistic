@@ -11,7 +11,7 @@ import java.util.Date;
 @Getter
 public class PostTransportOffer {
     private long transportOrderID;
-    private long carrierID;
+    /*private long carrierID;*/
     private Date startDate;
     private Date endDate;
     private float price;

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
+import pl.pwr.peaklogistic.dto.request.jobOffer.PutJobOffer;
 import pl.pwr.peaklogistic.model.JobOffer;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.repository.JobOfferRepository;
@@ -25,39 +26,42 @@ public class JobOfferService {
     private final ModelMapper mapper;
     private final UserRepository userRepository;
 
-    public ServiceResponse<List<JobOffer>> getAllJobOffers()
-    {
-         return ServiceResponse.ok(jobOfferRepository.findAll());
+    public ServiceResponse<List<JobOffer>> getAllJobOffers() {
+        return ServiceResponse.ok(jobOfferRepository.findAll());
     }
 
-    public ServiceResponse<JobOffer> getJobOfferById(long id){
+    public ServiceResponse<JobOffer> getJobOfferById(long id) {
         return jobOfferRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
 
-    public ServiceResponse<JobOffer> createJobOffer(PostJobOffer postJobOffer){
+    public ServiceResponse<JobOffer> createJobOffer(PostJobOffer postJobOffer, long carrierID) {
         return userRepository
-                .findById(postJobOffer.getCarrierID())
-                .map(x -> ServiceResponse.ok(jobOfferRepository.save(mapperWithUser(x).map(postJobOffer))))
+                .findById(carrierID)
+                .map(x -> ServiceResponse.created(jobOfferRepository.save(mapperWithUser(x).map(postJobOffer))))
                 .orElse(ServiceResponse.badRequest());
 
     }
 
-    public ServiceResponse<JobOffer> deleteJobOffer(long id){
+    public ServiceResponse<JobOffer> updateJobOffer(PutJobOffer putJobOffer, long jobOfferID) {
+        return jobOfferRepository
+                .findById(jobOfferID)
+                .map(x -> ServiceResponse.ok(jobOfferRepository.save(x.update(putJobOffer))))
+                .orElse(ServiceResponse.badRequest());
+    }
+
+    public ServiceResponse<JobOffer> deleteJobOffer(long id) {
         if (!jobOfferRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             jobOfferRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
     }
 
-    private TypeMap<PostJobOffer, JobOffer> mapperWithUser(User user){
+    private TypeMap<PostJobOffer, JobOffer> mapperWithUser(User user) {
         return mapper
-//                .addMappings(mapper -> mapper.map(src -> user, JobOffer::setCarrier));
                 .typeMap(PostJobOffer.class, JobOffer.class)
                 .addMapping(src -> user, JobOffer::setCarrier);
     }
-
-
 }

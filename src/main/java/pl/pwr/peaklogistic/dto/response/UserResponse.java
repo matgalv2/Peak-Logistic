@@ -8,10 +8,10 @@ import pl.pwr.peaklogistic.common.UserType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse{
+public class UserResponse {
     private Long userID;
     private String email;
-//    private String password;
+    //    private String password;
     private UserType userType;
     private String fullName;
     private String companyName;

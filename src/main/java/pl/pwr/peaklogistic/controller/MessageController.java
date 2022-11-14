@@ -1,7 +1,6 @@
 package pl.pwr.peaklogistic.controller;
 
 
-
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,16 +14,16 @@ public class MessageController {
     private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
     private final MessageRepository messageRepository;
 
-    // only for testing
-    @GetMapping(value = "/messages")
-    public ResponseEntity<?> getAllMessages(){
-        return ResponseEntity.ok(messageRepository.findAll());
-    }
-
-    @GetMapping(value = "/messages/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable long id){
-        return messageRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+//    // only for testing
+//    @GetMapping(value = "/messages")
+//    public ResponseEntity<?> getAllMessages(){
+//        return ResponseEntity.ok(messageRepository.findAll());
+//    }
+//
+//    @GetMapping(value = "/messages/{id}")
+//    public ResponseEntity<?> getUserById(@PathVariable long id){
+//        return messageRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+//    }
 
 //    @PostMapping(value = "/messages")
 //    public ResponseEntity<?> createUser(@RequestBody MessageRequest messageRequest){

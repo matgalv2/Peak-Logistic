@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarrierResponse{
+public class CarrierResponse {
     private Long userID;
     private String email;
     private String companyName;

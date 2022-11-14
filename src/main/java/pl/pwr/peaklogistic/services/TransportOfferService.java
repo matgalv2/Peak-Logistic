@@ -25,46 +25,44 @@ public class TransportOfferService {
     private final UserRepository userRepository;
     private final ModelMapper mapper;
 
-    public ServiceResponse<List<TransportOffer>> getAllTransportOffers()
-    {
+    public ServiceResponse<List<TransportOffer>> getAllTransportOffers() {
         return ServiceResponse.ok(transportOfferRepository.findAll());
     }
 
-    public ServiceResponse<TransportOffer> getTransportOfferById(long id){
+    public ServiceResponse<TransportOffer> getTransportOfferById(long id) {
         return transportOfferRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id){
+    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id) {
         return ServiceResponse.ok(transportOfferRepository.getTransportOffersByTransportOrderTransportOrderID(id));
     }
 
-    public ServiceResponse<List<TransportOffer>> getTransportOffersByCarrierId(long id){
+    public ServiceResponse<List<TransportOffer>> getTransportOffersByCarrierId(long id) {
         return ServiceResponse.ok(transportOfferRepository.getTransportOffersByCarrierUserID(id));
     }
 
 
-    public ServiceResponse<TransportOffer> createTransportOffer(PostTransportOffer postTransportOffer){
-        if(!userRepository.existsById(postTransportOffer.getCarrierID())
-                || !transportOrderRepository.existsById(postTransportOffer.getTransportOrderID())){
+    public ServiceResponse<TransportOffer> createTransportOffer(PostTransportOffer postTransportOffer, long carrierID) {
+        if (!userRepository.existsById(carrierID)
+                || !transportOrderRepository.existsById(postTransportOffer.getTransportOrderID())) {
             return ServiceResponse.badRequest();
-        }
-        else{
-            User carrier = userRepository.findById(postTransportOffer.getCarrierID()).get();
+        } else {
+            User carrier = userRepository.findById(carrierID).get();
             TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
             return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, order).map(postTransportOffer)));
         }
     }
 
-    public ServiceResponse<TransportOffer> deleteTransportOffer(long id){
+    public ServiceResponse<TransportOffer> deleteTransportOffer(long id) {
         if (!transportOfferRepository.existsById(id))
             return ServiceResponse.notFound();
-        else{
+        else {
             transportOfferRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
     }
 
-    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, TransportOrder transportOrder){
+    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, TransportOrder transportOrder) {
         return mapper
                 .typeMap(PostTransportOffer.class, TransportOffer.class)
                 .addMapping(src -> user, TransportOffer::setCarrier)
