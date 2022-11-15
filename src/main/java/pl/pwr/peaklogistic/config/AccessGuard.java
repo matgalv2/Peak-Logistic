@@ -34,7 +34,6 @@ public class AccessGuard {
             return false;
     }
 
-
     public boolean checkOrderByOrderId(Authentication authentication, long orderID) {
         Optional<User> user = userRepository.findByUsername(authentication.getName());
         Optional<TransportOrder> order = orderRepository.findById(orderID);
@@ -62,7 +61,6 @@ public class AccessGuard {
         else
             return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Customer;
     }
-
 
     public boolean checkOfferByOfferId(Authentication authentication, long offerID) {
         String username = authentication.getName();
@@ -92,7 +90,6 @@ public class AccessGuard {
             return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Carrier;
     }
 
-
     public boolean checkJobOfferByJobOfferId(Authentication authentication, long jobOfferID) {
         String username = authentication.getName();
         Optional<User> user = userRepository.findByUsername(username);
@@ -113,4 +110,13 @@ public class AccessGuard {
             return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Carrier;
     }
 
+    /* Custom accessors */
+
+    public boolean carrierOrAdmin(Authentication authentication){
+        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        if (user.isEmpty())
+            return false;
+        else
+            return user.get().getUserType() == UserType.Carrier && user.get().getUserType() == UserType.Admin;
+    }
 }

@@ -2,7 +2,6 @@ package pl.pwr.peaklogistic.config;
 
 
 import lombok.AllArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,8 +38,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, "/job-offers", "/job-offers/**").permitAll();
         http.authorizeRequests().antMatchers(POST, "/login", "/signup").permitAll();
 
-
-        /* Only for testing*/
 
         /* Signed users */
 
@@ -81,11 +78,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         /* Admin */
         http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasAuthority("ADMIN");
-        // to przenieść z admina
+
+
+        /* Custom access*/
         http.authorizeRequests()
                 .antMatchers(GET, "/transport-orders", "/transport-orders/**")
-                .hasAuthority("ADMIN")
-                .antMatchers();
+                .access("@accessGuard.carrierOrAdmin(authentication)");
 
 
         http.authorizeRequests().anyRequest().authenticated();
