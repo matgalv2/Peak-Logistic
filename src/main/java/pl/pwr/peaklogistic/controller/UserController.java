@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
-import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.*;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
@@ -28,18 +27,16 @@ public class UserController {
     private final UserService userService;
     private final ModelMapper mapper;
 
-
     @GetMapping(value = "/users")
-    public ResponseEntity<?> getAllUsers(){
-//        return ResponseEntity.ok(userService.getAllUsers().body().stream().map(UserResponse::toAPI));
+    public ResponseEntity<?> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers().body().stream().map(toAPI(UserResponse.class)::map));
     }
 
     @GetMapping(value = "/users/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable long id){
+    public ResponseEntity<?> getUserById(@PathVariable long id) {
         ServiceResponse<User> serviceResponse = userService.getUserById(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.Ok)
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(UserResponse.class).map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
@@ -48,39 +45,36 @@ public class UserController {
     }
 
     @GetMapping(value = "/customers")
-    public ResponseEntity<?> getAllCustomers(){
+    public ResponseEntity<?> getAllCustomers() {
         return ResponseEntity.ok(userService.getAllCustomers().body().stream().map(toAPI(CustomerResponse.class)::map));
     }
 
     @GetMapping(value = "/carriers")
-    public ResponseEntity<?> getAllCarriers(){
-        return ResponseEntity.ok(userService.getAllCarriers().body().stream().map( user -> toAPI(CarrierResponse.class).map(user)));
+    public ResponseEntity<?> getAllCarriers() {
+        return ResponseEntity.ok(userService.getAllCarriers().body().stream().map(user -> toAPI(CarrierResponse.class).map(user)));
     }
 
 
-
-    @PostMapping(value = "/users")
-    public ResponseEntity<?> createUser(@RequestBody PostUser postUser){
-        User addedUser = userService.createUser(postUser).body();
-        UserResponse user = toAPI(UserResponse.class).map(addedUser);
-        return ResponseEntity.created(URI.create("/" + user.getUserID())).body(user);
-    }
-
-    @PostMapping(value = "/carriers")
-    public ResponseEntity<?> createCarrier(@RequestBody PostCarrier postCarrier){
-        User addedCarrier = userService.createCarrier(postCarrier).body();
-        CarrierResponse carrier = toAPI(CarrierResponse.class).map(addedCarrier);
-        return ResponseEntity.created(URI.create("/" + carrier.getUserID())).body(carrier);
-    }
-
-    @PostMapping(value = "/customers")
-    public ResponseEntity<?> createCustomer(@RequestBody PostCustomer postCustomer){
-        User addedCustomer = userService.createCustomer(postCustomer).body();
-        CustomerResponse customer = toAPI(CustomerResponse.class).map(addedCustomer);
-        return ResponseEntity.created(URI.create("/" + customer.getUserID())).body(customer);
-    }
-
-
+//    @PostMapping(value = "/admins")
+//    public ResponseEntity<?> createUser(@RequestBody PostUser postUser){
+//        User addedUser = userService.createAdmin(postUser).body();
+//        UserResponse user = toAPI(UserResponse.class).map(addedUser);
+//        return ResponseEntity.created(URI.create("/" + user.getUserID())).body(user);
+//    }
+//
+//    @PostMapping(value = "/carriers")
+//    public ResponseEntity<?> createCarrier(@RequestBody PostCarrier postCarrier){
+//        User addedCarrier = userService.createCarrier(postCarrier).body();
+//        CarrierResponse carrier = toAPI(CarrierResponse.class).map(addedCarrier);
+//        return ResponseEntity.created(URI.create("/" + carrier.getUserID())).body(carrier);
+//    }
+//
+//    @PostMapping(value = "/customers")
+//    public ResponseEntity<?> createCustomer(@RequestBody PostCustomer postCustomer){
+//        User addedCustomer = userService.createCustomer(postCustomer).body();
+//        CustomerResponse customer = toAPI(CustomerResponse.class).map(addedCustomer);
+//        return ResponseEntity.created(URI.create("/" + customer.getUserID())).body(customer);
+//    }
 
 
 //    @Transactional
@@ -97,10 +91,10 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer){
+    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer) {
         ServiceResponse<User> serviceResponse = userService.updateCustomer(id, putCustomer);
 
-        if(serviceResponse.operationStatus() == OperationStatus.Ok)
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
@@ -108,29 +102,28 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/carriers/{id}")
-    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier){
+    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier) {
         ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
 
-        if(serviceResponse.operationStatus() == OperationStatus.Ok)
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
     }
 
 
-
     @DeleteMapping(value = "/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id){
+    public ResponseEntity<?> deleteUser(@PathVariable long id) {
         ServiceResponse<User> serviceResponse = userService.deleteUser(id);
 
-        if(serviceResponse.operationStatus() == OperationStatus.NoContent)
+        if (serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
         else
             return ResponseEntity.notFound().build();
     }
 
 
-    private <K> TypeMap<User, K> toAPI(Class<K> destinationType){
+    private <K> TypeMap<User, K> toAPI(Class<K> destinationType) {
         return mapper.typeMap(User.class, destinationType);
     }
 

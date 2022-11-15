@@ -9,7 +9,7 @@ import java.sql.Date;
 @Getter
 @AllArgsConstructor
 public class PostTransportOrder {
-    private Long customerID;
+//    private Long customerID;
 
     private String fromLocation;
     private String toLocation;
