@@ -28,12 +28,11 @@ import java.net.URI;
 @RestController
 public class JobOfferController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobOfferController.class);
     private final JobOfferService jobOfferService;
     private final ModelMapper mapper;
 
 
-    // only for testing
     @GetMapping(value = "/job-offers")
     public ResponseEntity<?> getAllJobOffers() {
         return ResponseEntity.ok(jobOfferService.getAllJobOffers().body().stream().map(toAPI()::map));
@@ -60,7 +59,6 @@ public class JobOfferController {
             return ResponseEntity.badRequest().build();
     }
 
-
     @PutMapping(value = "/job-offers/{id}")
     public ResponseEntity<?> updateJobOffer(@RequestBody PutJobOffer putJobOffer, @PathVariable(name = "id") long jobOfferID) {
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.updateJobOffer(putJobOffer, jobOfferID);
@@ -70,7 +68,6 @@ public class JobOfferController {
         else
             return ResponseEntity.badRequest().build();
     }
-
 
     @DeleteMapping(value = "/job-offers/{id}")
     public ResponseEntity<?> deleteOffer(@PathVariable long id) {

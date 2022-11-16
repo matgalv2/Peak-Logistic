@@ -30,13 +30,7 @@ public class User implements UserDetails {
     private String companyName;
     private String phone;
     private String taxIdentificationNumber;
-
-
-//    @OneToMany(mappedBy = "customer", orphanRemoval = true)
-//    private Set<Chat> customerChats;
-
-//    @OneToMany(mappedBy = "carrier", orphanRemoval = true)
-//    private Set<Chat> carrierChats;
+    
 
 //    @JsonIgnore
 //    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
