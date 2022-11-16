@@ -4,21 +4,17 @@ package pl.pwr.peaklogistic.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.PutCarrier;
 import pl.pwr.peaklogistic.dto.request.user.PutCustomer;
 
 import javax.persistence.*;
-import java.util.*;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "Users")
-public class User implements UserDetails {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
@@ -60,33 +56,4 @@ public class User implements UserDetails {
         phone = putCarrier.getPhone();
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(userType.toString().toUpperCase()));
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
