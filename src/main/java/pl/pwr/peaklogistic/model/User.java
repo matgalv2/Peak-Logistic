@@ -1,7 +1,6 @@
 package pl.pwr.peaklogistic.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,7 +22,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
     //    @Email
-    private String username;
+    private String email;
     private String password;
     private UserType userType;
     private String fullName;
@@ -59,9 +58,13 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(userType.toString().toUpperCase()));
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     @Override
-    public String getUsername() {
-        return username;
+    public String getUsername(){
+        return email;
     }
 
     @Override

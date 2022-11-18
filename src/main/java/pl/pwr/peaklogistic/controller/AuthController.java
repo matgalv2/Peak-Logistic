@@ -24,7 +24,6 @@ import java.net.URI;
 @AllArgsConstructor
 @RestController
 public class AuthController {
-
     private final UserService userService;
     private final ModelMapper mapper;
 
@@ -57,5 +56,4 @@ public class AuthController {
     private <K> TypeMap<User, K> toAPI(Class<K> destinationType) {
         return mapper.typeMap(User.class, destinationType);
     }
-
 }
