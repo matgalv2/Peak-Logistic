@@ -28,14 +28,14 @@ public class AccessGuard {
 
     public boolean checkUserByUserId(Authentication authentication, long id) {
         String username = authentication.getName();
-        if (userRepository.existsByUsername(username))
-            return userRepository.findByUsername(username).map(x -> id == x.getUserID()).orElse(false);
+        if (userRepository.existsByEmail(username))
+            return userRepository.findByEmail(username).map(x -> id == x.getUserID()).orElse(false);
         else
             return false;
     }
 
     public boolean checkOrderByOrderId(Authentication authentication, long orderID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         Optional<TransportOrder> order = orderRepository.findById(orderID);
 
         if (order.isEmpty() || user.isEmpty())
@@ -47,7 +47,7 @@ public class AccessGuard {
     }
 
     public boolean checkOrdersByCustomerId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
@@ -55,7 +55,7 @@ public class AccessGuard {
     }
 
     public boolean checkOrderByCustomerId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
@@ -64,7 +64,7 @@ public class AccessGuard {
 
     public boolean checkOfferByOfferId(Authentication authentication, long offerID) {
         String username = authentication.getName();
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByEmail(username);
         Optional<TransportOffer> offer = offerRepository.findById(offerID);
 
         if (offer.isEmpty() || user.isEmpty())
@@ -75,7 +75,7 @@ public class AccessGuard {
     }
 
     public boolean checkOffersByCarrierId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
@@ -83,7 +83,7 @@ public class AccessGuard {
     }
 
     public boolean checkOfferByCarrierId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
@@ -92,7 +92,7 @@ public class AccessGuard {
 
     public boolean checkJobOfferByJobOfferId(Authentication authentication, long jobOfferID) {
         String username = authentication.getName();
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByEmail(username);
         Optional<JobOffer> jobOffer = jobRepository.findById(jobOfferID);
 
         if (jobOffer.isEmpty() || user.isEmpty())
@@ -103,7 +103,7 @@ public class AccessGuard {
     }
 
     public boolean checkJobOfferByCarrierId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
@@ -113,7 +113,7 @@ public class AccessGuard {
     /* Custom accessors */
 
     public boolean carrierOrAdmin(Authentication authentication){
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
