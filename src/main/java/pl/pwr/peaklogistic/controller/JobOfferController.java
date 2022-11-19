@@ -28,7 +28,7 @@ import java.net.URI;
 @RestController
 public class JobOfferController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageController.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobOffer.class);
     private final JobOfferService jobOfferService;
     private final ModelMapper mapper;
 
