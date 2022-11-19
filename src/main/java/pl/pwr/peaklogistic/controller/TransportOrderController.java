@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
-import pl.pwr.peaklogistic.dto.response.CustomerResponse;
 import pl.pwr.peaklogistic.dto.response.TransportOrderResponse;
 import pl.pwr.peaklogistic.model.TransportOrder;
-import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.TransportOrderService;
-
 import java.net.URI;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class TransportOrderController {

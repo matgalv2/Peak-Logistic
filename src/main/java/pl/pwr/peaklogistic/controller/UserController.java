@@ -20,6 +20,8 @@ import pl.pwr.peaklogistic.services.UserService;
 
 import java.net.URI;
 
+
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class UserController {

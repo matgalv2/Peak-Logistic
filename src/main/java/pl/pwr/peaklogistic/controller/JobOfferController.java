@@ -13,17 +13,13 @@ import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PutJobOffer;
 import pl.pwr.peaklogistic.dto.response.JobOfferResponse;
-import pl.pwr.peaklogistic.dto.response.TransportOrderResponse;
-import pl.pwr.peaklogistic.dto.response.UserResponse;
 import pl.pwr.peaklogistic.model.JobOffer;
-import pl.pwr.peaklogistic.model.TransportOrder;
-import pl.pwr.peaklogistic.repository.JobOfferRepository;
-import pl.pwr.peaklogistic.repository.UserRepository;
 import pl.pwr.peaklogistic.services.JobOfferService;
 
 import java.net.URI;
 
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class JobOfferController {

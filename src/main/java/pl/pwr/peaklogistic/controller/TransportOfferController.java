@@ -24,6 +24,7 @@ import pl.pwr.peaklogistic.services.TransportOfferService;
 
 import java.net.URI;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class TransportOfferController {
