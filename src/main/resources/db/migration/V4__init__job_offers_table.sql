@@ -1,7 +1,7 @@
 CREATE TABLE JobOffers
 (
-    jobOfferID   INT          NOT NULL AUTO_INCREMENT,
-    carrierID    INT          NOT NULL,
+    jobOfferID   BIGINT       NOT NULL AUTO_INCREMENT,
+    carrierID    BIGINT       NOT NULL,
     title        VARCHAR(255) NOT NULL,
     content      TEXT         NOT NULL,
     contactEmail VARCHAR(255),

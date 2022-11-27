@@ -6,18 +6,20 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
+import pl.pwr.peaklogistic.common.Utils;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
-import pl.pwr.peaklogistic.dto.response.CustomerResponse;
 import pl.pwr.peaklogistic.dto.response.TransportOrderResponse;
 import pl.pwr.peaklogistic.model.TransportOrder;
-import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.TransportOrderService;
 
 import java.net.URI;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -46,6 +48,11 @@ public class TransportOrderController {
         return ResponseEntity.ok(transportOrderService.getTransportOrdersByCustomerId(id).body());
     }
 
+    @GetMapping(value = "/carrier/{id}/transport-orders")
+    public ResponseEntity<?> getTransportOrdersContainingOfferWithCarrierId(@PathVariable long id) {
+        return ResponseEntity.ok(transportOrderService.getTransportOrdersContainingOffersWithCarrierId(id));
+    }
+
     @PostMapping(value = "/customer/{id}/transport-orders")
     public ResponseEntity<?> createTransportOrder(@RequestBody PostTransportOrder postTransportOrder,
                                                   @PathVariable(name = "id") long customerID) {
@@ -66,6 +73,12 @@ public class TransportOrderController {
         else
             return ResponseEntity.notFound().build();
 
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return Utils.handleValidationExceptions(exception);
     }
 
     private TypeMap<TransportOrder, TransportOrderResponse> toAPI() {

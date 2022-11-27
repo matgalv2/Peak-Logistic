@@ -8,8 +8,10 @@ import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 import pl.pwr.peaklogistic.model.JobOffer;
+import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.TransportOfferRepository;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
@@ -19,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TransportOrderService {
     private final TransportOrderRepository transportOrderRepository;
+    private final TransportOfferRepository transportOfferRepository;
     private final ModelMapper mapper;
     private final UserRepository userRepository;
 
@@ -33,6 +36,10 @@ public class TransportOrderService {
     public ServiceResponse<List<TransportOrder>> getTransportOrdersByCustomerId(long id) {
         return ServiceResponse.ok(transportOrderRepository.getTransportOrdersByCustomerUserID(id));
     }
+    public ServiceResponse<List<TransportOrder>> getTransportOrdersContainingOffersWithCarrierId(long id) {
+        return ServiceResponse.ok(transportOfferRepository.getTransportOffersByCarrierUserID(id).stream().map(TransportOffer::getTransportOrder).toList());
+    }
+
 
 
     public ServiceResponse<TransportOrder> createTransportOrder(PostTransportOrder postTransportOrder, long customerID) {

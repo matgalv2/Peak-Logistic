@@ -35,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         /* All users */
 
-        http.authorizeRequests().antMatchers(GET, "/job-offers", "/job-offers/**").permitAll();
+        http.authorizeRequests().antMatchers(GET, "/job-offers", "/job-offers/**", "/carriers/{id}/job-offers").permitAll();
         http.authorizeRequests().antMatchers(POST, "/login", "/signup").permitAll();
 
 
@@ -75,6 +75,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .access("@accessGuard.checkJobOfferByJobOfferId(authentication, #id)");
         http.authorizeRequests().antMatchers(DELETE, "/job-offers/{id}")
                 .access("@accessGuard.checkJobOfferByCarrierId(authentication, #id)");
+
+
+        http.authorizeRequests().antMatchers(GET, "/carriers/{id}/transport-orders").hasRole("CARRIER");
 
         /* Admin */
         http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasAuthority("ADMIN");

@@ -3,7 +3,6 @@ package pl.pwr.peaklogistic.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.utility.nullability.MaybeNull;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.pl.NIP;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,8 +13,12 @@ import pl.pwr.peaklogistic.dto.request.user.PutCarrier;
 import pl.pwr.peaklogistic.dto.request.user.PutCustomer;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.util.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -25,37 +28,36 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
+
     @Email
+    @NotNull
     private String email;
+
     @NotBlank
-    @Length(min = 8)
+    @Length(min = 8, max = 255)
+    @NotNull
     private String password;
+
     @NotNull
     private UserType userType;
 
     @NotBlank
-    @Length(min = 5)
+    @Length(min = 5, max = 255)
+    @NotNull
     private String nickname;
+
     @NotBlank
-
+    @Length(min = 5, max = 255)
+    @NotNull
     private String companyName;
-    @Pattern(regexp = "^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$")
-    private String phone;
-    @NIP
-    private String taxIdentificationNumber;
-    
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<TransportOrder> transportOrders;
-//
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<TransportOffer> transportOffers;
-//
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<JobOffer> jobOffers;
+    @Pattern(regexp = "^\\+\\d{1,3}\\s\\d{9,11}$")
+    @NotNull
+    private String phone;
+
+    @NIP
+    @NotNull
+    private String taxIdentificationNumber;
 
 
     public void updateFromCustomerRequest(PutCustomer putCustomer) {
@@ -77,7 +79,7 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return email;
     }
 

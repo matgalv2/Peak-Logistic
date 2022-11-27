@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -30,8 +30,15 @@ public class TransportOffer {
     @JoinColumn(name = "carrierID")
     private User carrier;
 
+    @NotNull
     private Date startDate;
+
+    @NotNull
     private Date endDate;
+
+    @NotNull
     private float price;
+
+    //TODO: walidacja dat
 
 }

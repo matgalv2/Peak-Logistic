@@ -34,6 +34,10 @@ public class JobOfferService {
         return jobOfferRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
+    public ServiceResponse<List<JobOffer>> getJobOffersByCarrierId(long id) {
+        return ServiceResponse.ok(jobOfferRepository.findAllByCarrierUserID(id));
+    }
+
 
     public ServiceResponse<JobOffer> createJobOffer(PostJobOffer postJobOffer, long carrierID) {
         return userRepository

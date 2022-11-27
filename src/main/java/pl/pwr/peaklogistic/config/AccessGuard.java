@@ -112,7 +112,7 @@ public class AccessGuard {
 
     /* Custom accessors */
 
-    public boolean carrierOrAdmin(Authentication authentication){
+    public boolean carrierOrAdmin(Authentication authentication) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;

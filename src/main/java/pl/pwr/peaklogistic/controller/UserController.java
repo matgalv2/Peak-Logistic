@@ -6,11 +6,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
+import pl.pwr.peaklogistic.common.Utils;
 import pl.pwr.peaklogistic.dto.request.user.*;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
@@ -19,6 +22,7 @@ import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.UserService;
 
 import java.net.URI;
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -122,9 +126,13 @@ public class UserController {
             return ResponseEntity.notFound().build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return Utils.handleValidationExceptions(exception);
+    }
 
     private <K> TypeMap<User, K> toAPI(Class<K> destinationType) {
         return mapper.typeMap(User.class, destinationType);
     }
-
 }

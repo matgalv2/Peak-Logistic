@@ -6,10 +6,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
+import pl.pwr.peaklogistic.common.Utils;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PutJobOffer;
 import pl.pwr.peaklogistic.dto.response.JobOfferResponse;
@@ -22,6 +26,8 @@ import pl.pwr.peaklogistic.repository.UserRepository;
 import pl.pwr.peaklogistic.services.JobOfferService;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @AllArgsConstructor
@@ -46,6 +52,11 @@ public class JobOfferController {
             return ResponseEntity.ok(toAPI().map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping(value = "/carriers/{id}/job-offers")
+    public ResponseEntity<?> getJobOfferByCarrierID(@PathVariable long id) {
+        return ResponseEntity.ok(jobOfferService.getJobOffersByCarrierId(id).body().stream().map(toAPI()::map));
     }
 
     @PostMapping(value = "carriers/{id}/job-offers")
@@ -77,6 +88,12 @@ public class JobOfferController {
             return ResponseEntity.noContent().build();
         else
             return ResponseEntity.notFound().build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return Utils.handleValidationExceptions(exception);
     }
 
     private TypeMap<JobOffer, JobOfferResponse> toAPI() {
