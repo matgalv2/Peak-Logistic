@@ -3,6 +3,9 @@ package pl.pwr.peaklogistic.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.utility.nullability.MaybeNull;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.pl.NIP;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +14,7 @@ import pl.pwr.peaklogistic.dto.request.user.PutCarrier;
 import pl.pwr.peaklogistic.dto.request.user.PutCustomer;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.*;
 
 @Data
@@ -21,13 +25,23 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
-    //    @Email
+    @Email
     private String email;
+    @NotBlank
+    @Length(min = 8)
     private String password;
+    @NotNull
     private UserType userType;
-    private String fullName;
+
+    @NotBlank
+    @Length(min = 5)
+    private String nickname;
+    @NotBlank
+
     private String companyName;
+    @Pattern(regexp = "^[+]?[(]?[0-9]{3}[)]?[-\\s.]?[0-9]{3}[-\\s.]?[0-9]{4,6}$")
     private String phone;
+    @NIP
     private String taxIdentificationNumber;
     
 
@@ -45,7 +59,7 @@ public class User implements UserDetails {
 
 
     public void updateFromCustomerRequest(PutCustomer putCustomer) {
-        fullName = putCustomer.getFullName();
+        nickname = putCustomer.getFullName();
     }
 
     public void updateFromCarrierRequest(PutCarrier putCarrier) {
