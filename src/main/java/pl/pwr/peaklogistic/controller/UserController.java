@@ -21,6 +21,7 @@ import pl.pwr.peaklogistic.dto.response.UserResponse;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.UserService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer) {
+    public ResponseEntity<?> updateCustomer(@PathVariable long id, @Valid @RequestBody PutCustomer putCustomer) {
         ServiceResponse<User> serviceResponse = userService.updateCustomer(id, putCustomer);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)
@@ -106,7 +107,7 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/carriers/{id}")
-    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier) {
+    public ResponseEntity<?> updateCarrier(@PathVariable long id, @Valid @RequestBody PutCarrier putCarrier) {
         ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)

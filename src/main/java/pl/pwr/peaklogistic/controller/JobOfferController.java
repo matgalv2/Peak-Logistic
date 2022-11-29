@@ -25,6 +25,7 @@ import pl.pwr.peaklogistic.repository.JobOfferRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 import pl.pwr.peaklogistic.services.JobOfferService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class JobOfferController {
     }
 
     @PostMapping(value = "carriers/{id}/job-offers")
-    public ResponseEntity<?> createJobOffer(@RequestBody PostJobOffer postJobOffer, @PathVariable(name = "id") long carrierID) {
+    public ResponseEntity<?> createJobOffer(@Valid @RequestBody PostJobOffer postJobOffer, @PathVariable(name = "id") long carrierID) {
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.createJobOffer(postJobOffer, carrierID);
 
         if (serviceResponse.operationStatus() == OperationStatus.Created) {
@@ -71,7 +72,7 @@ public class JobOfferController {
     }
 
     @PutMapping(value = "/job-offers/{id}")
-    public ResponseEntity<?> updateJobOffer(@RequestBody PutJobOffer putJobOffer, @PathVariable(name = "id") long jobOfferID) {
+    public ResponseEntity<?> updateJobOffer(@Valid @RequestBody PutJobOffer putJobOffer, @PathVariable(name = "id") long jobOfferID) {
         ServiceResponse<JobOffer> serviceResponse = jobOfferService.updateJobOffer(putJobOffer, jobOfferID);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)

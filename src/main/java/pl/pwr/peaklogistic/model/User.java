@@ -35,33 +35,27 @@ public class User implements UserDetails {
 
     @NotBlank
     @Length(min = 8, max = 255)
-    @NotNull
     private String password;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @NotBlank
     @Length(min = 5, max = 255)
-    @NotNull
     private String nickname;
 
-    @NotBlank
     @Length(min = 5, max = 255)
-    @NotNull
     private String companyName;
 
     @Pattern(regexp = "^\\+\\d{1,3}\\s\\d{9,11}$")
-    @NotNull
     private String phone;
 
     @NIP
-    @NotNull
     private String taxIdentificationNumber;
 
 
     public void updateFromCustomerRequest(PutCustomer putCustomer) {
-        nickname = putCustomer.getFullName();
+        nickname = putCustomer.getNickname();
     }
 
     public void updateFromCarrierRequest(PutCarrier putCarrier) {

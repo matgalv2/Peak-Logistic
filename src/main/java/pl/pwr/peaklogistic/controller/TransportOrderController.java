@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.Utils;
+import pl.pwr.peaklogistic.common.validators.DateRangeValidator;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 import pl.pwr.peaklogistic.dto.response.TransportOrderResponse;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.services.TransportOrderService;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -54,8 +57,10 @@ public class TransportOrderController {
     }
 
     @PostMapping(value = "/customer/{id}/transport-orders")
-    public ResponseEntity<?> createTransportOrder(@RequestBody PostTransportOrder postTransportOrder,
+    public ResponseEntity<?> createTransportOrder(@Valid @RequestBody PostTransportOrder postTransportOrder,
                                                   @PathVariable(name = "id") long customerID) {
+        if(!DateRangeValidator.validate(postTransportOrder))
+            return ResponseEntity.badRequest().body(Map.of("error", "Validation error"));
 
         ServiceResponse<TransportOrder> serviceResponse = transportOrderService.createTransportOrder(postTransportOrder, customerID);
         if (serviceResponse.operationStatus() == OperationStatus.Created) {

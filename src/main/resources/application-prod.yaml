@@ -1,11 +1,11 @@
 spring:
   #  h2.console:
   #    enabled: false
-  datasource:
-    url: 'jdbc:mysql://localhost:3306'
-    password: pass
-    username: root
+#  datasource:
+#    url: 'jdbc:mysql://localhost:3306'
+#    password: pass
+#    username: root
 
   flyway:
     default-schema: PeakLogistics
-#    baseline-on-migrate: true
+    baseline-on-migrate: true

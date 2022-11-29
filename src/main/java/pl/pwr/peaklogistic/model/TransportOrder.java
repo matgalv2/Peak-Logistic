@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import pl.pwr.peaklogistic.common.validators.FloatRange;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -25,6 +26,9 @@ public class TransportOrder {
     @ManyToOne
     @JoinColumn(name = "customerID")
     private User customer;
+
+    @NotNull
+    private boolean completed;
 
     @NotBlank
     @Length(max = 255)
@@ -48,6 +52,7 @@ public class TransportOrder {
     private Date endDateTo;
 
     @NotNull
+    @FloatRange(min = 0.0f)
     private float productWeightKG;
 
     @NotNull
@@ -64,6 +69,4 @@ public class TransportOrder {
 
     @OneToMany(mappedBy = "transportOrder", cascade = CascadeType.ALL)
     private Set<TransportOffer> transportOffers;
-
-    //TODO: walidacja dat i wagi
 }

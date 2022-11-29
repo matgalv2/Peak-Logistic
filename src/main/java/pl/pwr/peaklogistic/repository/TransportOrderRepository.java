@@ -9,14 +9,4 @@ import java.util.List;
 
 public interface TransportOrderRepository extends JpaRepository<TransportOrder, Long> {
     List<TransportOrder> getTransportOrdersByCustomerUserID(long id);
-
-//    @Query(
-//            value = "SELECT * FROM TransportOffers to WHERE to = :id"
-//    )
-//    List<TransportOrder> getTransportOrdersByTransportOffersCarrierID(@Param("id") long id);
-
-
-    @Override
-    List<TransportOrder> findAllById(Iterable<Long> longs);
-
 }

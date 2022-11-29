@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.pwr.peaklogistic.common.validators.FloatRange;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -37,8 +38,7 @@ public class TransportOffer {
     private Date endDate;
 
     @NotNull
+    @FloatRange(min = 0.0f, twoDecimalPlaces = true, message = "Value cannot be negative neither have more than 2 decimal places")
     private float price;
-
-    //TODO: walidacja dat
 
 }

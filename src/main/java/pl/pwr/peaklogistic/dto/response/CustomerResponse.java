@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CustomerResponse {
     private Long userID;
-    private String username;
-    private String fullName;
+    private String email;
+    private String nickname;
 
 
 }

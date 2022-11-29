@@ -55,17 +55,26 @@ public class UserService {
 
     public ServiceResponse<User> createAdmin(PostUser postUser) {
         PostUser newPostUser = PostUser.copy(postUser, encryptPassword(postUser.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostUser.class, UserType.Admin).map(newPostUser)));
+        if(userRepository.existsByEmail(postUser.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostUser.class, UserType.Admin).map(newPostUser)));
     }
 
     public ServiceResponse<User> createCustomer(PostCustomer postCustomer) {
         PostCustomer newPostCustomer = PostCustomer.copy(postCustomer, encryptPassword(postCustomer.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostCustomer.class, UserType.Customer).map(newPostCustomer)));
+        if(userRepository.existsByEmail(postCustomer.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostCustomer.class, UserType.Customer).map(newPostCustomer)));
     }
 
     public ServiceResponse<User> createCarrier(PostCarrier postCarrier) {
         PostCarrier newPostCarrier = PostCarrier.copy(postCarrier, encryptPassword(postCarrier.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostCarrier.class, UserType.Carrier).map(newPostCarrier)));
+        if(userRepository.existsByEmail(postCarrier.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostCarrier.class, UserType.Carrier).map(newPostCarrier)));
     }
 
     public ServiceResponse<User> updateCustomer(long id, PutCustomer putCustomer) {

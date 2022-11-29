@@ -53,7 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, "/customer/{id}/transport-orders")
                 .access("@accessGuard.checkOrdersByCustomerId(authentication, #id)");
         http.authorizeRequests().antMatchers(POST, "/customer/{id}/transport-orders")
-                .access("@accessGuard.checkUserByUserId(authentication, #id)");
+                .access("@accessGuard.checkOrderByCustomerId(authentication, #id)");
         http.authorizeRequests().antMatchers(DELETE, "/transport-orders/{id}")
                 .access("@accessGuard.checkOrderByCustomerId(authentication, #id)");
 
@@ -70,7 +70,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
         http.authorizeRequests().antMatchers(POST, "/carriers/{id}/job-offers")
-                .access("@accessGuard.checkUserByUserId(authentication, #id)");
+                .access("@accessGuard.checkJobOfferByCarrierId(authentication, #id)");
         http.authorizeRequests().antMatchers(PUT, "/job-offers/{id}")
                 .access("@accessGuard.checkJobOfferByJobOfferId(authentication, #id)");
         http.authorizeRequests().antMatchers(DELETE, "/job-offers/{id}")
@@ -80,7 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(GET, "/carriers/{id}/transport-orders").hasRole("CARRIER");
 
         /* Admin */
-        http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasRole("ADMIN");
 
 
         /* Custom access*/

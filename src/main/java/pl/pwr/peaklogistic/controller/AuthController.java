@@ -17,6 +17,7 @@ import pl.pwr.peaklogistic.dto.response.UserResponse;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.UserService;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Map;
 
@@ -34,21 +35,21 @@ public class AuthController {
 
 
     @PostMapping(value = "/admins")
-    public ResponseEntity<?> createUser(@RequestBody PostUser postUser) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody PostUser postUser) {
         User addedUser = userService.createAdmin(postUser).body();
         UserResponse user = toAPI(UserResponse.class).map(addedUser);
         return ResponseEntity.created(URI.create("/" + user.getUserID())).body(user);
     }
 
     @PostMapping(value = "/carriers")
-    public ResponseEntity<?> createCarrier(@RequestBody PostCarrier postCarrier) {
+    public ResponseEntity<?> createCarrier(@Valid @RequestBody PostCarrier postCarrier) {
         User addedCarrier = userService.createCarrier(postCarrier).body();
         CarrierResponse carrier = toAPI(CarrierResponse.class).map(addedCarrier);
         return ResponseEntity.created(URI.create("/" + carrier.getUserID())).body(carrier);
     }
 
     @PostMapping(value = "/customers")
-    public ResponseEntity<?> createCustomer(@RequestBody PostCustomer postCustomer) {
+    public ResponseEntity<?> createCustomer(@Valid @RequestBody PostCustomer postCustomer) {
         User addedCustomer = userService.createCustomer(postCustomer).body();
         CustomerResponse customer = toAPI(CustomerResponse.class).map(addedCustomer);
         return ResponseEntity.created(URI.create("/" + customer.getUserID())).body(customer);

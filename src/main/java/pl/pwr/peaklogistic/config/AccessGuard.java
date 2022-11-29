@@ -2,9 +2,13 @@ package pl.pwr.peaklogistic.config;
 
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pl.pwr.peaklogistic.common.UserType;
+import pl.pwr.peaklogistic.controller.JobOfferController;
 import pl.pwr.peaklogistic.model.JobOffer;
 import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
@@ -21,17 +25,13 @@ import java.util.Optional;
 @Component
 public class AccessGuard {
 
-    UserRepository userRepository;
-    TransportOrderRepository orderRepository;
-    TransportOfferRepository offerRepository;
-    JobOfferRepository jobRepository;
+    final private UserRepository userRepository;
+    final private TransportOrderRepository orderRepository;
+    final private TransportOfferRepository offerRepository;
+    final private JobOfferRepository jobRepository;
 
     public boolean checkUserByUserId(Authentication authentication, long id) {
-        String username = authentication.getName();
-        if (userRepository.existsByEmail(username))
-            return userRepository.findByEmail(username).map(x -> id == x.getUserID()).orElse(false);
-        else
-            return false;
+        return userRepository.findByEmail(authentication.getName()).map(x -> id == x.getUserID()).orElse(false);
     }
 
     public boolean checkOrderByOrderId(Authentication authentication, long orderID) {

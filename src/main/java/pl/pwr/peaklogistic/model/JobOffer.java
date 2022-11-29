@@ -27,19 +27,29 @@ public class JobOffer {
 
     @NotBlank
     @Length(max = 255)
-    private String title;
+    private String titlePL;
 
     @NotBlank
-    private String content;
+    @Length(max = 255)
+    private String titleENG;
+
+    @NotBlank
+    private String contentPL;
+
+    @NotBlank
+    private String contentENG;
 
     @Email
     private String contactEmail;
 
 
     public JobOffer update(PutJobOffer jobOffer) {
-        title = jobOffer.getTitle();
-        content = jobOffer.getContent();
+        titlePL = jobOffer.getTitlePL();
+        titleENG = jobOffer.getTitleENG();
+        contentPL = jobOffer.getContentPL();
+        contentENG = jobOffer.getContentENG();
         contactEmail = jobOffer.getContactEmail();
+
         return this;
     }
 
