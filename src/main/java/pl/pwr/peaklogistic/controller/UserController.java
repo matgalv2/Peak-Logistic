@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class UserController {

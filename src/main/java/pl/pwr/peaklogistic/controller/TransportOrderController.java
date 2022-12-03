@@ -26,6 +26,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 public class TransportOrderController {
     private static final Logger logger = LoggerFactory.getLogger(TransportOrderController.class);
     private final TransportOrderService transportOrderService;
