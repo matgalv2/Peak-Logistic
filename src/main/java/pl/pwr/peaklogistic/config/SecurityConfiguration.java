@@ -55,10 +55,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/users/{id}")
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
 
+        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
+                .access("@accessGuard.checkOrderByRoleOrOrderId(authentication, #id)");
+
         /* Customer */
 
-        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
-                .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
+//        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
+//                .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
         http.authorizeRequests().antMatchers(GET, "/customer/{id}/transport-orders")
                 .access("@accessGuard.checkOrdersByCustomerId(authentication, #id)");
         http.authorizeRequests().antMatchers(POST, "/customer/{id}/transport-orders")
@@ -83,13 +86,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/job-offers/{id}")
                 .access("@accessGuard.checkJobOfferByJobOfferId(authentication, #id)");
         http.authorizeRequests().antMatchers(DELETE, "/job-offers/{id}")
-                .access("@accessGuard.checkJobOfferByCarrierId(authentication, #id)");
+                .access("@accessGuard.checkJobOfferByJobOfferId(authentication, #id)");
 
 
         http.authorizeRequests().antMatchers(GET, "/carriers/{id}/transport-orders").hasRole("CARRIER");
-
-        http.authorizeRequests().antMatchers(GET, "/transport-orders").hasRole("CARRIER");
-        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}").hasRole("CARRIER");
 
         /* Admin */
         http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasRole("ADMIN");
@@ -97,8 +97,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         /* Custom access*/
         http.authorizeRequests()
-                .antMatchers(GET, "/transport-orders", "/transport-orders/**")
-                .access("@accessGuard.carrierOrAdmin(authentication)");
+                .antMatchers(GET, "/transport-orders/{id}")
+                .access("@accessGuard.checkOrderByRoleOrOrderId(authentication, #id)");
+
+
+        http.authorizeRequests()
+                .antMatchers(GET, "/transport-orders").access("@accessGuard.carrierOrAdmin(authentication)");
 
 
         http.authorizeRequests().anyRequest().authenticated();

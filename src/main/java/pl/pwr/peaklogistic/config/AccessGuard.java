@@ -62,6 +62,15 @@ public class AccessGuard {
             return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Customer;
     }
 
+    public boolean checkOrderByRoleOrOrderId(Authentication authentication, long orderID){
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
+        if (user.isEmpty())
+            return false;
+        else
+            return checkOrderByOrderId(authentication, orderID) && user.get().getUserType() == UserType.Customer || carrierOrAdmin(authentication);
+
+    }
+
     public boolean checkOfferByOfferId(Authentication authentication, long offerID) {
         String username = authentication.getName();
         Optional<User> user = userRepository.findByEmail(username);
@@ -117,6 +126,8 @@ public class AccessGuard {
         if (user.isEmpty())
             return false;
         else
-            return user.get().getUserType() == UserType.Carrier && user.get().getUserType() == UserType.Admin;
+            return user.get().getUserType() == UserType.Carrier || user.get().getUserType() == UserType.Admin;
+
+
     }
 }
