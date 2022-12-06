@@ -88,6 +88,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests().antMatchers(GET, "/carriers/{id}/transport-orders").hasRole("CARRIER");
 
+        http.authorizeRequests().antMatchers(GET, "/transport-orders").hasRole("CARRIER");
+        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}").hasRole("CARRIER");
+
         /* Admin */
         http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasRole("ADMIN");
 
