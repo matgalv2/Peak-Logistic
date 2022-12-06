@@ -2,6 +2,7 @@ package pl.pwr.peaklogistic.config;
 
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @AllArgsConstructor
 @Configuration
+@Slf4j
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserSecurityDetailsService userSecurityDetailsService;
@@ -116,20 +118,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("**").allowedOrigins("http://localhost:8080");
-//            }
-//        };
-//    }
-
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        CorsConfiguration corsConfig = new CorsConfiguration().applyPermitDefaultValues();
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
+        source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
 
@@ -143,7 +137,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        source.registerCorsConfiguration("**", configuration);
 //        return source;
 //    }
-//
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
