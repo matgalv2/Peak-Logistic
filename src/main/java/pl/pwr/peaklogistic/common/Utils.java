@@ -18,4 +18,13 @@ public class Utils {
         });
         return errors;
     }
+
+    public static int decimalDigits(float value){
+        String [] parts = String.valueOf(value).split("\\.");
+
+        if (parts.length == 2)
+            return parts[1].length();
+        else
+            return 0;
+    }
 }

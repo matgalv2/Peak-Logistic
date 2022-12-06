@@ -55,9 +55,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PUT, "/users/{id}")
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
 
-        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
-                .access("@accessGuard.checkOrderByRoleOrOrderId(authentication, #id)");
-
         /* Customer */
 
 //        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
@@ -96,13 +93,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
         /* Custom access*/
-        http.authorizeRequests()
-                .antMatchers(GET, "/transport-orders/{id}")
+        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
                 .access("@accessGuard.checkOrderByRoleOrOrderId(authentication, #id)");
 
-
-        http.authorizeRequests()
-                .antMatchers(GET, "/transport-orders").access("@accessGuard.carrierOrAdmin(authentication)");
+        http.authorizeRequests().antMatchers(GET, "/transport-orders")
+                .access("@accessGuard.carrierOrAdmin(authentication)");
 
 
         http.authorizeRequests().anyRequest().authenticated();

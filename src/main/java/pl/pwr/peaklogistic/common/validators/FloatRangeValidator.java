@@ -1,8 +1,12 @@
 package pl.pwr.peaklogistic.common.validators;
 
+import jdk.jshell.execution.Util;
+import lombok.extern.slf4j.Slf4j;
+import pl.pwr.peaklogistic.common.Utils;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.math.BigDecimal;
+
 
 public class FloatRangeValidator implements ConstraintValidator<FloatRange, Float> {
 
@@ -20,6 +24,6 @@ public class FloatRangeValidator implements ConstraintValidator<FloatRange, Floa
 
     @Override
     public boolean isValid(Float value, ConstraintValidatorContext context) {
-        return value >= min && value <= max && (!twoDecimalPlaces || BigDecimal.valueOf(value).scale() == 2);
+        return value >= min && value <= max && (!twoDecimalPlaces || Utils.decimalDigits(value) == 2);
     }
 }
