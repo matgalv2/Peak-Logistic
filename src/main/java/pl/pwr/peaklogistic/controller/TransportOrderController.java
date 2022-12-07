@@ -21,7 +21,6 @@ import pl.pwr.peaklogistic.services.TransportOrderService;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -40,24 +39,23 @@ public class TransportOrderController {
     @GetMapping(value = "/transport-orders/{id}")
     public ResponseEntity<?> getTransportOrderById(@PathVariable long id) {
         ServiceResponse<TransportOrder> serviceResponse = transportOrderService.getTransportOrderById(id);
-
         if (serviceResponse.operationStatus() == OperationStatus.Ok)
             return ResponseEntity.ok(toAPI().map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/customer/{id}/transport-orders")
-    public ResponseEntity<?> getTransportOrdersByCustomerId(@PathVariable long id) {
-        return ResponseEntity.ok(transportOrderService.getTransportOrdersByCustomerId(id).body());
+    @GetMapping(value = "/customers/{id}/transport-orders")
+    public ResponseEntity<?> getTransportOrdersByCustomerId(@PathVariable(name = "id") long customerID) {
+        return ResponseEntity.ok(transportOrderService.getTransportOrdersByCustomerId(customerID).body().stream().map(toAPI()::map));
     }
 
-    @GetMapping(value = "/carrier/{id}/transport-orders")
-    public ResponseEntity<?> getTransportOrdersContainingOfferWithCarrierId(@PathVariable long id) {
-        return ResponseEntity.ok(transportOrderService.getTransportOrdersContainingOffersWithCarrierId(id));
+    @GetMapping(value = "/carriers/{id}/transport-orders")
+    public ResponseEntity<?> getTransportOrdersContainingOfferWithCarrierId(@PathVariable(name = "id") long carrierID) {
+        return ResponseEntity.ok(transportOrderService.getTransportOrdersContainingOffersWithCarrierId(carrierID).body().stream().map(toAPI()::map));
     }
 
-    @PostMapping(value = "/customer/{id}/transport-orders")
+    @PostMapping(value = "/customers/{id}/transport-orders")
     public ResponseEntity<?> createTransportOrder(@Valid @RequestBody PostTransportOrder postTransportOrder,
                                                   @PathVariable(name = "id") long customerID) {
         if(!DateRangeValidator.validate(postTransportOrder))
@@ -69,6 +67,18 @@ public class TransportOrderController {
             return ResponseEntity.created(URI.create("/" + orderResponse.getTransportOrderID())).body(orderResponse);
         } else
             return ResponseEntity.badRequest().build();
+    }
+
+    @PatchMapping(value = "/transport-orders/{id}")
+    public ResponseEntity<?> setOrderAsCompleted(@PathVariable(name = "id") long orderID) {
+        ServiceResponse<?> serviceResponse = transportOrderService.setTransportOrderAsCompletedById(orderID);
+
+        if (serviceResponse.operationStatus() == OperationStatus.Ok)
+            return ResponseEntity.noContent().build();
+        else if(serviceResponse.operationStatus() == OperationStatus.BadRequest)
+            return ResponseEntity.badRequest().body(Map.of("error", "Transport order is already completed"));
+        else
+            return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping(value = "/transport-orders/{id}")
@@ -88,6 +98,7 @@ public class TransportOrderController {
     }
 
     private TypeMap<TransportOrder, TransportOrderResponse> toAPI() {
-        return mapper.typeMap(TransportOrder.class, TransportOrderResponse.class);
+        return mapper
+                .typeMap(TransportOrder.class, TransportOrderResponse.class);
     }
 }

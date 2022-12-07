@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface TransportOfferRepository extends JpaRepository<TransportOffer, Long> {
     List<TransportOffer> getTransportOffersByCarrierUserID(long id);
-
-    List<TransportOffer> getTransportOffersByTransportOrderTransportOrderID(long id);
 }

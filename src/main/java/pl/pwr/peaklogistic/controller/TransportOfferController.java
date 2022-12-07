@@ -105,6 +105,8 @@ public class TransportOfferController {
     }
 
     private TypeMap<TransportOffer, TransportOfferResponse> toAPI() {
-        return mapper.typeMap(TransportOffer.class, TransportOfferResponse.class);
+        return mapper
+                .typeMap(TransportOffer.class, TransportOfferResponse.class)
+                .addMapping(TransportOffer::getCarrier, TransportOfferResponse::setCarrier);
     }
 }

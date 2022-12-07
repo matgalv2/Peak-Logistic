@@ -5,8 +5,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.pwr.peaklogistic.common.UserType;
+import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
+
+import java.sql.Date;
 
 
 @Component
@@ -14,6 +18,7 @@ import pl.pwr.peaklogistic.repository.UserRepository;
 public class CMDRunner implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TransportOrderRepository orderRepository;
 
     @Override
     public void run(String... args) {
@@ -48,6 +53,21 @@ public class CMDRunner implements CommandLineRunner {
             user5.setPassword(passwordEncoder.encode("pass1"));
             user5.setUserType(UserType.Carrier);
             userRepository.save(user5);
+
+            TransportOrder order = new TransportOrder();
+            order.setCustomer(user2);
+            order.setCompleted(false);
+            order.setFromLocation("a");
+            order.setToLocation("b");
+            order.setStartDateFrom(Date.valueOf("2022-3-28"));
+            order.setStartDateTo(Date.valueOf("2022-3-28"));
+            order.setEndDateFrom(Date.valueOf("2022-3-28"));
+            order.setEndDateTo(Date.valueOf("2022-3-28"));
+            order.setProductWeightKG(21.3f);
+            order.setProductHeightCM(100);
+            order.setProductWidthCM(100);
+            order.setProductDepthCM(100);
+            orderRepository.save(order);
         }
 
     }

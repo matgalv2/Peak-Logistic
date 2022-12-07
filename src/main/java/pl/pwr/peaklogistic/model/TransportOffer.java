@@ -21,10 +21,12 @@ public class TransportOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transportOfferID;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "transportOrderID")
-    private TransportOrder transportOrder;
+//    @JsonIgnore
+//    @ManyToOne
+//    @JoinColumn(name = "transportOrderID")
+//    private TransportOrder transportOrder;
+
+    private Long transportOrderID;
 
     @JsonIgnore
     @ManyToOne

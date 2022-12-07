@@ -33,9 +33,9 @@ public class TransportOfferService {
         return transportOfferRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id) {
-        return ServiceResponse.ok(transportOfferRepository.getTransportOffersByTransportOrderTransportOrderID(id));
-    }
+//    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id) {
+//        return ServiceResponse.ok(transportOfferRepository.getTransportOffersByTransportOrderTransportOrderID(id));
+//    }
 
     public ServiceResponse<List<TransportOffer>> getTransportOffersByCarrierId(long id) {
         return ServiceResponse.ok(transportOfferRepository.getTransportOffersByCarrierUserID(id));
@@ -48,8 +48,8 @@ public class TransportOfferService {
             return ServiceResponse.badRequest();
         } else {
             User carrier = userRepository.findById(carrierID).get();
-            TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
-            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, order).map(postTransportOffer)));
+//            TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
+            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, postTransportOffer.getTransportOrderID()).map(postTransportOffer)));
         }
     }
 
@@ -62,10 +62,11 @@ public class TransportOfferService {
         }
     }
 
-    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, TransportOrder transportOrder) {
+    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, long orderID) {
         return mapper
                 .typeMap(PostTransportOffer.class, TransportOffer.class)
                 .addMapping(src -> user, TransportOffer::setCarrier)
-                .addMapping(src -> transportOrder, TransportOffer::setTransportOrder);
+                .addMapping(src -> orderID, TransportOffer::setTransportOrderID);
+//                .addMapping(src -> transportOrder, TransportOffer::setTransportOrder);
     }
 }

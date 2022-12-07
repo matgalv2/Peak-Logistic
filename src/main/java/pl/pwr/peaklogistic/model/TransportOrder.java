@@ -38,7 +38,6 @@ public class TransportOrder {
     @Length(max = 255)
     private String toLocation;
 
-
     @NotNull
     private Date startDateFrom;
 
@@ -67,6 +66,6 @@ public class TransportOrder {
     @Min(1)
     private int productDepthCM;
 
-    @OneToMany(mappedBy = "transportOrder", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transportOrderID", cascade = CascadeType.ALL)
     private Set<TransportOffer> transportOffers;
 }

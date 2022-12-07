@@ -2,13 +2,9 @@ package pl.pwr.peaklogistic.config;
 
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import pl.pwr.peaklogistic.common.UserType;
-import pl.pwr.peaklogistic.controller.JobOfferController;
 import pl.pwr.peaklogistic.model.JobOffer;
 import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
@@ -127,7 +123,5 @@ public class AccessGuard {
             return false;
         else
             return user.get().getUserType() == UserType.Carrier || user.get().getUserType() == UserType.Admin;
-
-
     }
 }
