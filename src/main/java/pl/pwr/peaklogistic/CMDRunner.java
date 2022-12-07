@@ -5,8 +5,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.pwr.peaklogistic.common.UserType;
+import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.TransportOfferRepository;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
@@ -19,6 +21,7 @@ public class CMDRunner implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TransportOrderRepository orderRepository;
+    private final TransportOfferRepository offerRepository;
 
     @Override
     public void run(String... args) {
@@ -68,6 +71,16 @@ public class CMDRunner implements CommandLineRunner {
             order.setProductWidthCM(100);
             order.setProductDepthCM(100);
             orderRepository.save(order);
+
+            TransportOffer offer = new TransportOffer();
+
+            offer.setCarrier(user4);
+            offer.setTransportOrderID(order.getTransportOrderID());
+            offer.setStartDate(Date.valueOf("2022-12-12"));
+            offer.setEndDate(Date.valueOf("2022-12-12"));
+            offer.setPrice(4.59f);
+
+            offerRepository.save(offer);
         }
 
     }

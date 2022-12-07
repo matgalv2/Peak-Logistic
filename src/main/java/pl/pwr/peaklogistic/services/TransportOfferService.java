@@ -49,7 +49,12 @@ public class TransportOfferService {
         } else {
             User carrier = userRepository.findById(carrierID).get();
 //            TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
-            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, postTransportOffer.getTransportOrderID()).map(postTransportOffer)));
+            TransportOffer o = toDomain(carrier).map(postTransportOffer);
+//            o.setTransportOfferID(null);
+
+            TransportOffer offer = transportOfferRepository.save(o);
+//            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, postTransportOffer.getTransportOrderID()).map(postTransportOffer)));
+            return ServiceResponse.created(offer);
         }
     }
 
@@ -62,11 +67,12 @@ public class TransportOfferService {
         }
     }
 
-    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, long orderID) {
+    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user) {
         return mapper
                 .typeMap(PostTransportOffer.class, TransportOffer.class)
-                .addMapping(src -> user, TransportOffer::setCarrier)
-                .addMapping(src -> orderID, TransportOffer::setTransportOrderID);
+                .addMappings(mapper -> mapper.skip(TransportOffer::setTransportOfferID))
+                .addMapping(src -> user, TransportOffer::setCarrier);
+//                .addMapping(src -> orderID, TransportOffer::setTransportOrderID);
 //                .addMapping(src -> transportOrder, TransportOffer::setTransportOrder);
     }
 }
