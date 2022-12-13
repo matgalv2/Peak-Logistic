@@ -83,17 +83,19 @@ public class UserController {
 //    }
 
 
-//    @Transactional
-//    @PutMapping(value = "/users/{id}/passwd")
-//    public ResponseEntity<?> updatePassword(@PathVariable long id, @RequestBody UserPasswordRequest userPasswordRequest){
-//        if(!userRepository.existsById(id))
-//            return ResponseEntity.notFound().build();
-//        else{
-//            User user = userRepository.getReferenceById(id);
-//            user.setPassword(userPasswordRequest.getNewPassword());
-//            return ResponseEntity.ok().body(userRepository.save(user));
-//        }
-//    }
+    @Transactional
+    @PutMapping(value = "/users/{id}/pwd")
+    public ResponseEntity<?> updatePassword(@PathVariable long id,@Valid @RequestBody UserPasswordRequest userPasswordRequest){
+
+        ServiceResponse<User> serviceResponse = userService.updateUserPassword(id, userPasswordRequest);
+
+        if (serviceResponse.operationStatus() == OperationStatus.NoContent)
+            return ResponseEntity.noContent().build();
+        else if (serviceResponse.operationStatus() == OperationStatus.BadRequest)
+            return ResponseEntity.badRequest().body(Map.of("error", "Wrong password or entered passwords are not identical"));
+        else
+            return ResponseEntity.notFound().build();
+    }
 
     @Transactional
     @PutMapping(value = "/customers/{id}")
@@ -112,7 +114,7 @@ public class UserController {
         ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)
-            return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
+            return ResponseEntity.ok(toAPI(CarrierResponse.class).map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
     }

@@ -54,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
         http.authorizeRequests().antMatchers(PUT, "/users/{id}")
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
+        http.authorizeRequests().antMatchers(PUT, "/users/{id}/pwd")
+                .access("@accessGuard.checkUserByUserId(authentication, #id)");
         http.authorizeRequests().antMatchers(GET, "/carriers")
                 .access("@accessGuard.loggedUser(authentication)");
 
@@ -70,6 +72,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(PATCH, "/transport-orders/{id}")
                 .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
 
+        /** update **/
+
+        http.authorizeRequests().antMatchers(PUT, "/customers/{id}")
+                .access("@accessGuard.checkUserByUserId(authentication, #id)");
         /* Carrier */
 
         http.authorizeRequests().antMatchers(GET, "/transport-offers/{id}")
@@ -91,6 +97,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
         http.authorizeRequests().antMatchers(GET, "/carriers/{id}/transport-orders")
+                .access("@accessGuard.checkUserByUserId(authentication, #id)");
+
+        /** update **/
+
+        http.authorizeRequests().antMatchers(PUT, "/carriers/{id}")
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
 
         /* Admin */

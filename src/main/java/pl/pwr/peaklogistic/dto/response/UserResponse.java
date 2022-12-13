@@ -13,7 +13,7 @@ public class UserResponse {
     private String email;
     //    private String password;
     private UserType userType;
-    private String nicknamee;
+    private String nickname;
     private String companyName;
     private String phone;
     private String taxIdentificationNumber;

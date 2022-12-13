@@ -129,6 +129,21 @@ public class UserService {
         }
     }
 
+    public ServiceResponse<User> updateUserPassword(long id, UserPasswordRequest userPasswordRequest){
+        if(!userRepository.existsById(id))
+            return ServiceResponse.notFound();
+        else{
+            User user = userRepository.findById(id).get();
+            if (!passwordEncoder.matches(userPasswordRequest.getOldPassword(), user.getPassword()) || !userPasswordRequest.getNewPassword().equals(userPasswordRequest.getRepeatedNewPassword()))
+                return ServiceResponse.badRequest();
+            else{
+                user.setPassword(encryptPassword(userPasswordRequest.getNewPassword()));
+                userRepository.save(user);
+                return ServiceResponse.noContent();
+            }
+        }
+    }
+
 
     private <K> TypeMap<K, User> toDomain(Class<K> sourceType, UserType userType) {
         return mapper.typeMap(sourceType, User.class).addMapping(src -> userType, User::setUserType);
