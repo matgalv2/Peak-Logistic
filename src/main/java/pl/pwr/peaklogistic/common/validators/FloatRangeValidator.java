@@ -24,6 +24,6 @@ public class FloatRangeValidator implements ConstraintValidator<FloatRange, Floa
 
     @Override
     public boolean isValid(Float value, ConstraintValidatorContext context) {
-        return value >= min && value <= max && (!twoDecimalPlaces || Utils.decimalDigits(value) == 2);
+        return value >= min && value <= max && (!twoDecimalPlaces || Utils.decimalDigits(value) <= 2);
     }
 }

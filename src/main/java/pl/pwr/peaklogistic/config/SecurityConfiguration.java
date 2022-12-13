@@ -54,17 +54,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
         http.authorizeRequests().antMatchers(PUT, "/users/{id}")
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
+        http.authorizeRequests().antMatchers(GET, "/carriers")
+                .access("@accessGuard.loggedUser(authentication)");
 
         /* Customer */
 
-//        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
-//                .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
-        http.authorizeRequests().antMatchers(GET, "/customer/{id}/transport-orders")
-                .access("@accessGuard.checkOrdersByCustomerId(authentication, #id)");
-        http.authorizeRequests().antMatchers(POST, "/customer/{id}/transport-orders")
+        http.authorizeRequests().antMatchers(GET, "/transport-orders/{id}")
+                .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
+        http.authorizeRequests().antMatchers(GET, "/customers/{id}/transport-orders")
+                .access("@accessGuard.checkOrderByCustomerId(authentication, #id)");
+        http.authorizeRequests().antMatchers(POST, "/customers/{id}/transport-orders")
                 .access("@accessGuard.checkOrderByCustomerId(authentication, #id)");
         http.authorizeRequests().antMatchers(DELETE, "/transport-orders/{id}")
-                .access("@accessGuard.checkOrderByCustomerId(authentication, #id)");
+                .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
         http.authorizeRequests().antMatchers(PATCH, "/transport-orders/{id}")
                 .access("@accessGuard.checkOrderByOrderId(authentication, #id)");
 
@@ -92,7 +94,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .access("@accessGuard.checkUserByUserId(authentication, #id)");
 
         /* Admin */
-        http.authorizeRequests().antMatchers("/users", "/users/{id}", "/admins").hasRole("ADMIN");
+
+        http.authorizeRequests().antMatchers(GET, "/users", "/customers").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/users/{id}").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/admins").hasAuthority("ADMIN");
 
 
         /* Custom access*/
