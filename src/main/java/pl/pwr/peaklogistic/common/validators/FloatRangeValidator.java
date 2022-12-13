@@ -1,7 +1,5 @@
 package pl.pwr.peaklogistic.common.validators;
 
-import jdk.jshell.execution.Util;
-import lombok.extern.slf4j.Slf4j;
 import pl.pwr.peaklogistic.common.Utils;
 
 import javax.validation.ConstraintValidator;

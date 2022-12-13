@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.*;
+import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final TransportOrderRepository orderRepository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -110,6 +113,8 @@ public class UserService {
         if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
         else {
+            //deadline is super close
+            orderRepository.deleteAllById(orderRepository.getTransportOrdersByCustomerUserID(id).stream().map(TransportOrder::getTransportOrderID).toList());
             userRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
