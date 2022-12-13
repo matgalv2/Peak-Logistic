@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.*;
+import pl.pwr.peaklogistic.model.JobOffer;
+import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.JobOfferRepository;
+import pl.pwr.peaklogistic.repository.TransportOfferRepository;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
@@ -21,6 +25,8 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final TransportOrderRepository orderRepository;
+    private final TransportOfferRepository transportOfferRepository;
+    private final JobOfferRepository jobOfferRepository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -115,6 +121,9 @@ public class UserService {
         else {
             //deadline is super close
             orderRepository.deleteAllById(orderRepository.getTransportOrdersByCustomerUserID(id).stream().map(TransportOrder::getTransportOrderID).toList());
+            transportOfferRepository.deleteAllById(transportOfferRepository.getTransportOffersByCarrierUserID(id).stream().map(TransportOffer::getTransportOfferID).toList());
+            jobOfferRepository.deleteAllById(jobOfferRepository.findAllByCarrierUserID(id).stream().map(JobOffer::getJobOfferID).toList());
+
             userRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
