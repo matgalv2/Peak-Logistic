@@ -73,7 +73,7 @@ public class TransportOrderController {
     public ResponseEntity<?> setOrderAsCompleted(@PathVariable(name = "id") long orderID) {
         ServiceResponse<?> serviceResponse = transportOrderService.setTransportOrderAsCompletedById(orderID);
 
-        if (serviceResponse.operationStatus() == OperationStatus.Ok)
+        if (serviceResponse.operationStatus() == OperationStatus.NoContent)
             return ResponseEntity.noContent().build();
         else if(serviceResponse.operationStatus() == OperationStatus.BadRequest)
             return ResponseEntity.badRequest().body(Map.of("error", "Transport order is already completed"));

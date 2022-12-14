@@ -68,4 +68,5 @@ public class TransportOrder {
 
     @OneToMany(mappedBy = "transportOrderID", cascade = CascadeType.ALL)
     private Set<TransportOffer> transportOffers;
+
 }

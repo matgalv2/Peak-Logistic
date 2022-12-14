@@ -1,7 +1,9 @@
 package pl.pwr.peaklogistic.dto.request.transportOrder;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import pl.pwr.peaklogistic.common.validators.FloatRange;
 
@@ -10,8 +12,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
-
+@Data
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PostTransportOrder {
 
@@ -40,17 +43,17 @@ public class PostTransportOrder {
 
     @NotNull
     @FloatRange(min = 0.0f)
-    private float productWeightInKG;
+    private float productWeightKG;
 
     @NotNull
     @Min(1)
-    private int productHeightInCM;
+    private int productHeightCM;
 
     @NotNull
     @Min(1)
-    private int productWidthInCM;
+    private int productWidthCM;
 
     @NotNull
     @Min(1)
-    private int productDepthInCM;
+    private int productDepthCM;
 }
