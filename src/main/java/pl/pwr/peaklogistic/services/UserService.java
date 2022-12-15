@@ -9,7 +9,13 @@ import org.springframework.stereotype.Service;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
 import pl.pwr.peaklogistic.dto.request.user.*;
+import pl.pwr.peaklogistic.model.JobOffer;
+import pl.pwr.peaklogistic.model.TransportOffer;
+import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.JobOfferRepository;
+import pl.pwr.peaklogistic.repository.TransportOfferRepository;
+import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
 import java.util.List;
@@ -18,6 +24,9 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final TransportOrderRepository orderRepository;
+    private final TransportOfferRepository transportOfferRepository;
+    private final JobOfferRepository jobOfferRepository;
     private final ModelMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -55,17 +64,26 @@ public class UserService {
 
     public ServiceResponse<User> createAdmin(PostUser postUser) {
         PostUser newPostUser = PostUser.copy(postUser, encryptPassword(postUser.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostUser.class, UserType.Admin).map(newPostUser)));
+        if(userRepository.existsByEmail(postUser.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostUser.class, UserType.Admin).map(newPostUser)));
     }
 
     public ServiceResponse<User> createCustomer(PostCustomer postCustomer) {
         PostCustomer newPostCustomer = PostCustomer.copy(postCustomer, encryptPassword(postCustomer.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostCustomer.class, UserType.Customer).map(newPostCustomer)));
+        if(userRepository.existsByEmail(postCustomer.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostCustomer.class, UserType.Customer).map(newPostCustomer)));
     }
 
     public ServiceResponse<User> createCarrier(PostCarrier postCarrier) {
         PostCarrier newPostCarrier = PostCarrier.copy(postCarrier, encryptPassword(postCarrier.getPassword()));
-        return ServiceResponse.created(userRepository.save(toDomain(PostCarrier.class, UserType.Carrier).map(newPostCarrier)));
+        if(userRepository.existsByEmail(postCarrier.getEmail()))
+            return ServiceResponse.badRequest();
+        else
+            return ServiceResponse.created(userRepository.save(toDomain(PostCarrier.class, UserType.Carrier).map(newPostCarrier)));
     }
 
     public ServiceResponse<User> updateCustomer(long id, PutCustomer putCustomer) {
@@ -101,8 +119,31 @@ public class UserService {
         if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
         else {
+            //TODO poprawić testy
+            if(userRepository.findById(id).get().getUserType() == UserType.Admin && userRepository.findAll().stream().filter(x -> x.getUserType() == UserType.Admin).count() == 1)
+                return ServiceResponse.badRequest();
+            //deadline is super close
+            orderRepository.deleteAllById(orderRepository.getTransportOrdersByCustomerUserID(id).stream().map(TransportOrder::getTransportOrderID).toList());
+            transportOfferRepository.deleteAllById(transportOfferRepository.getTransportOffersByCarrierUserID(id).stream().map(TransportOffer::getTransportOfferID).toList());
+            jobOfferRepository.deleteAllById(jobOfferRepository.findAllByCarrierUserID(id).stream().map(JobOffer::getJobOfferID).toList());
+
             userRepository.deleteById(id);
             return ServiceResponse.noContent();
+        }
+    }
+
+    public ServiceResponse<User> updateUserPassword(long id, UserPasswordRequest userPasswordRequest){
+        if(!userRepository.existsById(id))
+            return ServiceResponse.notFound();
+        else{
+            User user = userRepository.findById(id).get();
+            if (!passwordEncoder.matches(userPasswordRequest.getOldPassword(), user.getPassword()) || !userPasswordRequest.getNewPassword().equals(userPasswordRequest.getRepeatedNewPassword()))
+                return ServiceResponse.badRequest();
+            else{
+                user.setPassword(encryptPassword(userPasswordRequest.getNewPassword()));
+                userRepository.save(user);
+                return ServiceResponse.noContent();
+            }
         }
     }
 

@@ -3,13 +3,17 @@ package pl.pwr.peaklogistic.services;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
+import org.springframework.data.convert.TypeMapper;
 import org.springframework.stereotype.Service;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.dto.request.jobOffer.PostJobOffer;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
+import pl.pwr.peaklogistic.dto.response.TransportOfferResponse;
 import pl.pwr.peaklogistic.model.JobOffer;
+import pl.pwr.peaklogistic.model.TransportOffer;
 import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
+import pl.pwr.peaklogistic.repository.TransportOfferRepository;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
@@ -19,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TransportOrderService {
     private final TransportOrderRepository transportOrderRepository;
+    private final TransportOfferRepository transportOfferRepository;
     private final ModelMapper mapper;
     private final UserRepository userRepository;
 
@@ -30,9 +35,24 @@ public class TransportOrderService {
         return transportOrderRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<TransportOrder>> getTransportOrdersByCustomerId(long id) {
-        return ServiceResponse.ok(transportOrderRepository.getTransportOrdersByCustomerUserID(id));
+    public ServiceResponse<List<TransportOrder>> getTransportOrdersByCustomerId(long customerID) {
+        return ServiceResponse.ok(transportOrderRepository.getTransportOrdersByCustomerUserID(customerID));
     }
+    public ServiceResponse<List<TransportOrder>> getTransportOrdersContainingOffersWithCarrierId(long carrierID) {
+        return ServiceResponse.ok(
+                transportOrderRepository
+                        .findAll()
+                        .stream()
+                        .filter(
+                                order ->
+                                        order.getTransportOffers().stream().filter(
+                                                offer -> offer.getCarrier().getUserID() == carrierID
+                                        ).toList().size() > 0
+                        )
+                        .toList()
+        );
+    }
+
 
 
     public ServiceResponse<TransportOrder> createTransportOrder(PostTransportOrder postTransportOrder, long customerID) {
@@ -50,6 +70,22 @@ public class TransportOrderService {
             transportOrderRepository.deleteById(id);
             return ServiceResponse.noContent();
         }
+    }
+
+    public ServiceResponse<?> setTransportOrderAsCompletedById(long id){
+        return transportOrderRepository
+                    .findById(id)
+                    .map(x -> {
+                            if(x.isCompleted())
+                                return ServiceResponse.badRequest();
+                            else {
+                                x.setCompleted(true);
+                                transportOrderRepository.save(x);
+                                return ServiceResponse.noContent();
+                            }
+                        }
+                    )
+                    .orElse(ServiceResponse.notFound());
     }
 
     private TypeMap<PostTransportOrder, TransportOrder> mapperWithUser(User user) {

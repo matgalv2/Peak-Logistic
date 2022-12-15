@@ -6,12 +6,16 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
 import pl.pwr.peaklogistic.common.UserType;
+import pl.pwr.peaklogistic.common.Utils;
+import pl.pwr.peaklogistic.common.validators.DateRangeValidator;
 import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
@@ -22,8 +26,12 @@ import pl.pwr.peaklogistic.model.TransportOrder;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.TransportOfferService;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 
+
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class TransportOfferController {
@@ -59,8 +67,12 @@ public class TransportOfferController {
 
     // allows modifying object after creation
     @PostMapping(value = "/carriers/{id}/transport-offers")
-    public ResponseEntity<?> createTransportOffer(@RequestBody PostTransportOffer postTransportOffer,
+    public ResponseEntity<?> createTransportOffer(@Valid @RequestBody PostTransportOffer postTransportOffer,
                                                   @PathVariable(name = "id") long carrierID) {
+
+        if(!DateRangeValidator.validate(postTransportOffer))
+            return ResponseEntity.badRequest().body(Map.of("error", "Validation error"));
+
         ServiceResponse<TransportOffer> serviceResponse = transportOfferService.createTransportOffer(postTransportOffer, carrierID);
 
         if (serviceResponse.operationStatus() == OperationStatus.Created) {
@@ -86,7 +98,15 @@ public class TransportOfferController {
     }
 
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return Utils.handleValidationExceptions(exception);
+    }
+
     private TypeMap<TransportOffer, TransportOfferResponse> toAPI() {
-        return mapper.typeMap(TransportOffer.class, TransportOfferResponse.class);
+        return mapper
+                .typeMap(TransportOffer.class, TransportOfferResponse.class)
+                .addMapping(TransportOffer::getCarrier, TransportOfferResponse::setCarrier);
     }
 }

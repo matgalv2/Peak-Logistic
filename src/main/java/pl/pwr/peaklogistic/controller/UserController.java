@@ -6,11 +6,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import pl.pwr.peaklogistic.common.OperationStatus;
 import pl.pwr.peaklogistic.common.ServiceResponse;
+import pl.pwr.peaklogistic.common.Utils;
 import pl.pwr.peaklogistic.dto.request.user.*;
 import pl.pwr.peaklogistic.dto.response.CarrierResponse;
 import pl.pwr.peaklogistic.dto.response.CustomerResponse;
@@ -18,8 +21,11 @@ import pl.pwr.peaklogistic.dto.response.UserResponse;
 import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.UserService;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} )
 @AllArgsConstructor
 @RestController
 public class UserController {
@@ -77,21 +83,23 @@ public class UserController {
 //    }
 
 
-//    @Transactional
-//    @PutMapping(value = "/users/{id}/passwd")
-//    public ResponseEntity<?> updatePassword(@PathVariable long id, @RequestBody UserPasswordRequest userPasswordRequest){
-//        if(!userRepository.existsById(id))
-//            return ResponseEntity.notFound().build();
-//        else{
-//            User user = userRepository.getReferenceById(id);
-//            user.setPassword(userPasswordRequest.getNewPassword());
-//            return ResponseEntity.ok().body(userRepository.save(user));
-//        }
-//    }
+    @Transactional
+    @PutMapping(value = "/users/{id}/pwd")
+    public ResponseEntity<?> updatePassword(@PathVariable long id,@Valid @RequestBody UserPasswordRequest userPasswordRequest){
+
+        ServiceResponse<User> serviceResponse = userService.updateUserPassword(id, userPasswordRequest);
+
+        if (serviceResponse.operationStatus() == OperationStatus.NoContent)
+            return ResponseEntity.noContent().build();
+        else if (serviceResponse.operationStatus() == OperationStatus.BadRequest)
+            return ResponseEntity.badRequest().body(Map.of("error", "Wrong password or entered passwords are not identical"));
+        else
+            return ResponseEntity.notFound().build();
+    }
 
     @Transactional
     @PutMapping(value = "/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody PutCustomer putCustomer) {
+    public ResponseEntity<?> updateCustomer(@PathVariable long id, @Valid @RequestBody PutCustomer putCustomer) {
         ServiceResponse<User> serviceResponse = userService.updateCustomer(id, putCustomer);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)
@@ -102,11 +110,11 @@ public class UserController {
 
     @Transactional
     @PutMapping(value = "/carriers/{id}")
-    public ResponseEntity<?> updateCarrier(@PathVariable long id, @RequestBody PutCarrier putCarrier) {
+    public ResponseEntity<?> updateCarrier(@PathVariable long id, @Valid @RequestBody PutCarrier putCarrier) {
         ServiceResponse<User> serviceResponse = userService.updateCarrier(id, putCarrier);
 
         if (serviceResponse.operationStatus() == OperationStatus.Ok)
-            return ResponseEntity.ok(toAPI(CustomerResponse.class).map(serviceResponse.body()));
+            return ResponseEntity.ok(toAPI(CarrierResponse.class).map(serviceResponse.body()));
         else
             return ResponseEntity.notFound().build();
     }
@@ -122,9 +130,13 @@ public class UserController {
             return ResponseEntity.notFound().build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        return Utils.handleValidationExceptions(exception);
+    }
 
     private <K> TypeMap<User, K> toAPI(Class<K> destinationType) {
         return mapper.typeMap(User.class, destinationType);
     }
-
 }

@@ -1,8 +1,9 @@
 package pl.pwr.peaklogistic.model;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.pl.NIP;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +12,12 @@ import pl.pwr.peaklogistic.dto.request.user.PutCarrier;
 import pl.pwr.peaklogistic.dto.request.user.PutCustomer;
 
 import javax.persistence.*;
-import java.util.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,31 +27,34 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
-    //    @Email
-    private String email;
-    private String password;
-    private UserType userType;
-    private String fullName;
-    private String companyName;
-    private String phone;
-    private String taxIdentificationNumber;
-    
 
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<TransportOrder> transportOrders;
-//
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<TransportOffer> transportOffers;
-//
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<JobOffer> jobOffers;
+    @Email
+    @NotNull
+    private String email;
+
+    @NotBlank
+    @Length(min = 5, max = 255)
+    private String password;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserType userType;
+
+    @Length(min = 5, max = 255)
+    private String nickname;
+
+    @Length(min = 5, max = 255)
+    private String companyName;
+
+    @Pattern(regexp = "^\\+\\d{1,3}\\s\\d{9,11}$")
+    private String phone;
+
+    @NIP
+    private String taxIdentificationNumber;
 
 
     public void updateFromCustomerRequest(PutCustomer putCustomer) {
-        fullName = putCustomer.getFullName();
+        nickname = putCustomer.getNickname();
     }
 
     public void updateFromCarrierRequest(PutCarrier putCarrier) {
@@ -63,7 +72,7 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername(){
+    public String getUsername() {
         return email;
     }
 

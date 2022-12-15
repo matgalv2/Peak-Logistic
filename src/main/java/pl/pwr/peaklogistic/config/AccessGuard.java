@@ -14,6 +14,8 @@ import pl.pwr.peaklogistic.repository.TransportOfferRepository;
 import pl.pwr.peaklogistic.repository.TransportOrderRepository;
 import pl.pwr.peaklogistic.repository.UserRepository;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -21,18 +23,21 @@ import java.util.Optional;
 @Component
 public class AccessGuard {
 
-    UserRepository userRepository;
-    TransportOrderRepository orderRepository;
-    TransportOfferRepository offerRepository;
-    JobOfferRepository jobRepository;
+    final private UserRepository userRepository;
+    final private TransportOrderRepository orderRepository;
+    final private TransportOfferRepository offerRepository;
+    final private JobOfferRepository jobRepository;
+
+
+    private boolean isCustomer(UserType type){ return type.equals(UserType.Customer);}
+    private boolean isCarrier(UserType type){ return type.equals(UserType.Carrier);}
+    private boolean isAdmin(UserType type){ return type.equals(UserType.Admin);}
+
 
     public boolean checkUserByUserId(Authentication authentication, long id) {
-        String username = authentication.getName();
-        if (userRepository.existsByEmail(username))
-            return userRepository.findByEmail(username).map(x -> id == x.getUserID()).orElse(false);
-        else
-            return false;
+        return userRepository.findByEmail(authentication.getName()).map(x -> id == x.getUserID() || isAdmin(x.getUserType())).orElse(false);
     }
+
 
     public boolean checkOrderByOrderId(Authentication authentication, long orderID) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
@@ -42,24 +47,26 @@ public class AccessGuard {
             return false;
         else
             return user.get().getUserID().longValue() == order.get().getCustomer().getUserID().longValue()
-                    && user.get().getUserType() == UserType.Customer;
+                    && isCustomer(user.get().getUserType()) || isAdmin(user.get().getUserType());
 
     }
 
-    public boolean checkOrdersByCustomerId(Authentication authentication, long userID) {
-        Optional<User> user = userRepository.findByEmail(authentication.getName());
-        if (user.isEmpty())
-            return false;
-        else
-            return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Customer;
-    }
 
     public boolean checkOrderByCustomerId(Authentication authentication, long userID) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
-            return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Customer;
+            return checkUserByUserId(authentication, userID) && isCustomer(user.get().getUserType()) || isAdmin(user.get().getUserType());
+    }
+
+    public boolean checkOrderByRoleOrOrderId(Authentication authentication, long orderID){
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
+        if (user.isEmpty())
+            return false;
+        else
+            return checkOrderByOrderId(authentication, orderID) && isCustomer(user.get().getUserType()) || isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
+
     }
 
     public boolean checkOfferByOfferId(Authentication authentication, long offerID) {
@@ -71,7 +78,7 @@ public class AccessGuard {
             return false;
         else
             return user.get().getUserID().longValue() == offer.get().getCarrier().getUserID().longValue()
-                    && user.get().getUserType() == UserType.Carrier;
+                    && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     public boolean checkOffersByCarrierId(Authentication authentication, long userID) {
@@ -79,7 +86,7 @@ public class AccessGuard {
         if (user.isEmpty())
             return false;
         else
-            return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Carrier;
+            return checkUserByUserId(authentication, userID) && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     public boolean checkOfferByCarrierId(Authentication authentication, long userID) {
@@ -87,7 +94,7 @@ public class AccessGuard {
         if (user.isEmpty())
             return false;
         else
-            return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Carrier;
+            return checkUserByUserId(authentication, userID) && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     public boolean checkJobOfferByJobOfferId(Authentication authentication, long jobOfferID) {
@@ -99,7 +106,7 @@ public class AccessGuard {
             return false;
         else
             return user.get().getUserID().longValue() == jobOffer.get().getCarrier().getUserID().longValue()
-                    && user.get().getUserType() == UserType.Carrier;
+                    && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     public boolean checkJobOfferByCarrierId(Authentication authentication, long userID) {
@@ -107,16 +114,20 @@ public class AccessGuard {
         if (user.isEmpty())
             return false;
         else
-            return checkUserByUserId(authentication, userID) && user.get().getUserType() == UserType.Carrier;
+            return checkUserByUserId(authentication, userID) && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     /* Custom accessors */
 
-    public boolean carrierOrAdmin(Authentication authentication){
+    public boolean carrierOrAdmin(Authentication authentication) {
         Optional<User> user = userRepository.findByEmail(authentication.getName());
         if (user.isEmpty())
             return false;
         else
-            return user.get().getUserType() == UserType.Carrier && user.get().getUserType() == UserType.Admin;
+            return isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
+    }
+
+    public boolean loggedUser(Authentication authentication) {
+        return userRepository.findByEmail(authentication.getName()).isPresent();
     }
 }

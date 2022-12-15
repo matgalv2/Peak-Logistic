@@ -37,9 +37,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        log.info("Username is: {}", username);
-        log.info("Password is: {}", password);
-
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username, password);
 
@@ -55,7 +52,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = JWT.create()
                 .withSubject(user.getEmail())
                 .withClaim("userID", user.getUserID())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .withIssuer(request.getRequestURI())
                 .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);

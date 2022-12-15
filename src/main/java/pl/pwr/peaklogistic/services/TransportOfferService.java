@@ -33,9 +33,9 @@ public class TransportOfferService {
         return transportOfferRepository.findById(id).map(ServiceResponse::ok).orElse(ServiceResponse.notFound());
     }
 
-    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id) {
-        return ServiceResponse.ok(transportOfferRepository.getTransportOffersByTransportOrderTransportOrderID(id));
-    }
+//    public ServiceResponse<List<TransportOffer>> getTransportOffersByTransportOrderId(long id) {
+//        return ServiceResponse.ok(transportOfferRepository.getTransportOffersByTransportOrderTransportOrderID(id));
+//    }
 
     public ServiceResponse<List<TransportOffer>> getTransportOffersByCarrierId(long id) {
         return ServiceResponse.ok(transportOfferRepository.getTransportOffersByCarrierUserID(id));
@@ -48,8 +48,13 @@ public class TransportOfferService {
             return ServiceResponse.badRequest();
         } else {
             User carrier = userRepository.findById(carrierID).get();
-            TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
-            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, order).map(postTransportOffer)));
+//            TransportOrder order = transportOrderRepository.findById(postTransportOffer.getTransportOrderID()).get();
+            TransportOffer o = toDomain(carrier).map(postTransportOffer);
+//            o.setTransportOfferID(null);
+
+            TransportOffer offer = transportOfferRepository.save(o);
+//            return ServiceResponse.created(transportOfferRepository.save(toDomain(carrier, postTransportOffer.getTransportOrderID()).map(postTransportOffer)));
+            return ServiceResponse.created(offer);
         }
     }
 
@@ -62,10 +67,12 @@ public class TransportOfferService {
         }
     }
 
-    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user, TransportOrder transportOrder) {
+    private TypeMap<PostTransportOffer, TransportOffer> toDomain(User user) {
         return mapper
                 .typeMap(PostTransportOffer.class, TransportOffer.class)
-                .addMapping(src -> user, TransportOffer::setCarrier)
-                .addMapping(src -> transportOrder, TransportOffer::setTransportOrder);
+                .addMappings(mapper -> mapper.skip(TransportOffer::setTransportOfferID))
+                .addMapping(src -> user, TransportOffer::setCarrier);
+//                .addMapping(src -> orderID, TransportOffer::setTransportOrderID);
+//                .addMapping(src -> transportOrder, TransportOffer::setTransportOrder);
     }
 }

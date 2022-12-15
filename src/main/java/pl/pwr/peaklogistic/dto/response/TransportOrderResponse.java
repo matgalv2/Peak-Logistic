@@ -17,6 +17,8 @@ public class TransportOrderResponse {
     private Long transportOrderID;
     private CustomerResponse customer;
 
+    private boolean completed;
+
     private String fromLocation;
     private String toLocation;
 

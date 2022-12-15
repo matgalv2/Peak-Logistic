@@ -13,7 +13,9 @@ public class JobOfferResponse {
 
     private Long jobOfferID;
     private CarrierResponse carrier;
-    private String title;
-    private String content;
+    private String titlePL;
+    private String titleENG;
+    private String contentPL;
+    private String contentENG;
     private String contactEmail;
 }

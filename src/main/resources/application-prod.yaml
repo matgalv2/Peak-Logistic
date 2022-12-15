@@ -1,5 +1,11 @@
 spring:
-  h2.console:
-    enabled: false
   datasource:
-    url: 'jdbc:h2:mem:db'
+    url: 'jdbc:mysql://db:3306/PeakLogistics'
+#    url: 'jdbc:mysql://localhost:3306/PeakLogistics'
+    username: root
+    password: pass
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  flyway:
+    default-schema: PeakLogistics
+    baseline-on-migrate: true
