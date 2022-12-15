@@ -78,7 +78,7 @@ public class AccessGuard {
             return false;
         else
             return user.get().getUserID().longValue() == offer.get().getCarrier().getUserID().longValue()
-                    && isCarrier(user.get().getUserType());
+                    && isCarrier(user.get().getUserType()) || isAdmin(user.get().getUserType());
     }
 
     public boolean checkOffersByCarrierId(Authentication authentication, long userID) {

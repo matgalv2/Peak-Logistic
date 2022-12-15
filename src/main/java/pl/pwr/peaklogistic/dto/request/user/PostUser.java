@@ -20,7 +20,7 @@ public class PostUser {
     private String email;
 
     @NotBlank
-    @Length(min = 8, max = 255)
+    @Length(min = 5, max = 255)
     private String password;
 
     public static PostUser copy(PostUser postUser, String password) {

@@ -12,6 +12,12 @@ services:
 #    command: --default-authentication-plugin=caching-sha2-password
     environment:
       MYSQL_ROOT_PASSWORD: pass
+  backend:
+    image: springio/backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 
 #  backend:
 #    image: backend

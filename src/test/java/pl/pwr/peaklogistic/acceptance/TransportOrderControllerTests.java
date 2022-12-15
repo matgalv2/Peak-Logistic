@@ -18,28 +18,19 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.pwr.peaklogistic.PeakLogisticApplication;
 import pl.pwr.peaklogistic.dto.request.transportOffer.PostTransportOffer;
 import pl.pwr.peaklogistic.dto.request.transportOrder.PostTransportOrder;
 import pl.pwr.peaklogistic.dto.request.user.*;
-import pl.pwr.peaklogistic.dto.response.CustomerResponse;
-import pl.pwr.peaklogistic.dto.response.TransportOrderResponse;
-import pl.pwr.peaklogistic.model.TransportOrder;
-import pl.pwr.peaklogistic.model.User;
 import pl.pwr.peaklogistic.services.TransportOfferService;
 import pl.pwr.peaklogistic.services.TransportOrderService;
 import pl.pwr.peaklogistic.services.UserService;
 
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.sql.Date;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 

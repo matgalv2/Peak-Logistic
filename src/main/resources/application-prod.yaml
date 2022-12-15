@@ -1,6 +1,4 @@
 spring:
-  #  h2.console:
-  #    enabled: false
   datasource:
     url: 'jdbc:mysql://localhost:3306/PeakLogistics'
     username: root
