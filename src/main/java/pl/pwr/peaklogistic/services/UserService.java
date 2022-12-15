@@ -119,6 +119,9 @@ public class UserService {
         if (!userRepository.existsById(id))
             return ServiceResponse.notFound();
         else {
+            //TODO poprawić testy
+            if(userRepository.findById(id).get().getUserType() == UserType.Admin && userRepository.findAll().stream().filter(x -> x.getUserType() == UserType.Admin).count() == 1)
+                return ServiceResponse.badRequest();
             //deadline is super close
             orderRepository.deleteAllById(orderRepository.getTransportOrdersByCustomerUserID(id).stream().map(TransportOrder::getTransportOrderID).toList());
             transportOfferRepository.deleteAllById(transportOfferRepository.getTransportOffersByCarrierUserID(id).stream().map(TransportOffer::getTransportOfferID).toList());
