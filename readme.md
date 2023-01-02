@@ -1,0 +1,2 @@
+# Peak-Logistic
+Web application that helps organising transport and reducing number of traveled kilometers without load. First version basically works as OLX, except that only for transport companies and clients interested in their services.
